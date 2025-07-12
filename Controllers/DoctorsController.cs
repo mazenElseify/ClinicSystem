@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ClinicSystem.API.Data;
 using ClinicSystem.API.Models;
 
+
 namespace ClinicSystem.API.Controllers
 {
     [Route("api/[controller]")]
@@ -26,8 +27,10 @@ namespace ClinicSystem.API.Controllers
         public async Task<ActionResult<Doctor>> GetDoctor(int id)
         {
             var doctor = await _context.Doctors.FindAsync(id);
-            if (GetDoctor == null)
+
+            if (doctor == null)
                 return NotFound();
+
             return doctor;
         }
 
@@ -43,14 +46,14 @@ namespace ClinicSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDoctor(int id, Doctor doctor)
         {
-            if (id != GetDoctor.id)
+            if (id != doctor.Id)
                 return BadRequest();
 
-            _context.Entry(GetDoctor).State = EntityState.Modified;
+            _context.Entry(doctor).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesasync();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -68,17 +71,18 @@ namespace ClinicSystem.API.Controllers
         public async Task<IActionResult> DeleteDoctor(int id)
         {
             var doctor = await _context.Doctors.FindAsync(id);
-            if (GetDoctor == null)
+            if (doctor == null)
                 return NotFound();
 
             _context.Doctors.Remove(doctor);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool DoctorExists(int id)
         {
-            return _context.Doctors.Any(d => decimal.Id == id);
+            return _context.Doctors.Any(d => d.Id == id);
         }
         
 

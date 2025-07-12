@@ -1,5 +1,8 @@
-namespace ClinicSystem.APO.Models
-{ 
+using ClinicSystem.API.Models;
+
+
+namespace ClinicSystem.API.Models
+{
     public class Patient
     {
         public int PatientId { get; set; }

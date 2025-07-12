@@ -1,5 +1,8 @@
+using ClinicSystem.API.Models;
+
+
 namespace ClinicSystem.API.Models
-{ 
+{
     public class LabTest
     {
         public int Id { get; set; }
@@ -15,4 +18,4 @@ namespace ClinicSystem.API.Models
         public Doctor? RequestedByDoctor { get; set; }
     }
 
-    }
+}

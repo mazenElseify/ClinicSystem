@@ -1,5 +1,8 @@
+using ClinicSystem.API.Models;
+
+
 namespace ClinicSystem.API.Models
-{ 
+{
     public class ObstetricHistory
     {
         public int Id { get; set; }

@@ -1,5 +1,8 @@
+using ClinicSystem.API.Models;
+
+
 namespace ClinicSystem.API.Models
-{ 
+{
     public class Appointment
     {
         public int AppointmentId { get; set; }

@@ -1,6 +1,8 @@
+using ClinicSystem.API.Models;
+
 
 namespace ClinicSystem.API.Models
-{ 
+{
     public class Pregnancy
     {
         public int id { get; set; }

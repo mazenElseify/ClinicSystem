@@ -1,5 +1,8 @@
+using ClinicSystem.API.Models;
+
+
 namespace ClinicSystem.API.Models
-{ 
+{
     public class Prescription
     {
         public int Id { get; set; }

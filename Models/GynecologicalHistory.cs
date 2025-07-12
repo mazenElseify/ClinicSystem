@@ -1,5 +1,8 @@
-namespace ClinicSysteem.API.Models
-{ 
+using ClinicSystem.API.Models;
+
+
+namespace ClinicSystem.API.Models
+{
     public class GynocologicalHistory
     {
         public int Id { get; set; }
