@@ -1,0 +1,30 @@
+# === .NET ===
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.pdb
+*.dbmdl
+*.log
+
+# === ASP.NET Secrets ===
+secrets.json
+*.db
+
+# === VS / Rider IDE ===
+.vscode/
+.idea/
+*.sln.docstates
+
+# === React (Node.js) ===
+node_modules/
+build/
+dist/
+.npm
+.env
+.env.*
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
