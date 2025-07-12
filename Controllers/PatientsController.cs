@@ -19,7 +19,7 @@ namespace ClinicSystem.API.Controllers
         }
 
         [HttpGet]
-        public async Tast<ActionResault<IEnumerable<PatientController>>> GetPatients()
+        public async Tast<ActionResault<IEnumerable<Patient>>> GetPatients()
         {
             return await _context.Patients.ToListAsync();
         }
@@ -30,17 +30,10 @@ namespace ClinicSystem.API.Controllers
             var patient = await -_context.Patients.FindAsync(id);
             if (patient == null)
                 return NotFound();
+
             return patient;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<PatientController>> CreatePatient(Patient patient)
-        {
-            var patient = await _context.Patients.FindAsync(id);
-            if (GetPatient == null)
-                return NotFound();
-            retuen patient;
-        }
 
         [HttpPost]
         public async Task<ActionResult<Patient>> CreatePatient(Patient patient)
@@ -48,23 +41,18 @@ namespace ClinicSystem.API.Controllers
             _context.Patient.Add(GetPatient);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetPatient), new { id = GetPatient.PAtientId }, GetPatient);
+            return CreatedAtAction(nameof(GetPatient), new { id = GetPatient.PatientId }, GetPatient);
 
         }
 
         [HttpPut("{id}")]
-        public async task<IActionResult> UpdatePatient(int id, Patient patient)
+        public async Task<IActionResult> UpdatePatient(int id, Patient patient)
         {
             if (id != GetPatient.PatientId)
                 return BadRequest();
-            _context.Entry(GetPatient).State = EntityStatus.Modified;
-            await _context.SaveChangesAsync();
-
-            return BadRequest();
 
             _context.Entry(patient).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
@@ -72,9 +60,10 @@ namespace ClinicSystem.API.Controllers
         public async Task<IActionResult> DeletePatient(int id)
         {
             var patient = await _context.Patients.FindAsync(id);
-            if (GetPatient == null)
+            if (patient == null)
                 retuen NotFound();
-            _context.Patients.Remove(GetPatient);
+
+            _context.Patients.Remove(patient);
             await _context.SaveChangesAsync();
 
             return NoContent();

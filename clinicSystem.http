@@ -1,6 +1,0 @@
-@clinicSystem_HostAddress = http://localhost:5255
-
-GET {{clinicSystem_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

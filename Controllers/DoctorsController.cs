@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFramewirkCore;
+using Microsoft.EntityFrameworkCore;
 using ClinicSystem.API.Data;
 using ClinicSystem.API.Models;
 
@@ -16,7 +16,7 @@ namespace ClinicSystem.API.Controllers
             _context = context;
         }
 
-        [HttptGet]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetAllDoctors()
         {
             return await _context.Doctors.ToListAsync();
@@ -65,7 +65,7 @@ namespace ClinicSystem.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Tast<IActionResult> DeleteDoctor(int id)
+        public async Task<IActionResult> DeleteDoctor(int id)
         {
             var doctor = await _context.Doctors.FindAsync(id);
             if (GetDoctor == null)
