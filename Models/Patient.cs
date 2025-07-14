@@ -5,7 +5,7 @@ namespace ClinicSystem.API.Models
 {
     public class Patient
     {
-        public int PatientId { get; set; }
+        public int Id { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public DateTime DateOfBirth { get; set; }
@@ -14,7 +14,6 @@ namespace ClinicSystem.API.Models
         public String? Email { get; set; }
         public string? Address { get; set; }
         public string? MaritalStatus { get; set; }
-        public string? Occupation { get; set; }
         public string? EmergencyContactName { get; set; }
         public string? EmergencyContactPhone { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
