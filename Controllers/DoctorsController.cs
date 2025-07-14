@@ -31,7 +31,7 @@ namespace ClinicSystem.API.Controllers
             if (doctor == null)
                 return NotFound();
 
-            return doctor;
+            return Ok(doctor);
         }
 
         [HttpPost]
@@ -57,7 +57,7 @@ namespace ClinicSystem.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DoctorExists(id))
+                if (!_context.Doctors.Any(e => e.Id == id))
                     return NotFound();
                 else
                     throw;

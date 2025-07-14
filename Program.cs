@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ClinicSystem.API.Data; // Your DbContext namespace
 using Npgsql;
+using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ builder.Services.AddDbContext<ClinicDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 
 var app = builder.Build();
 
@@ -20,6 +24,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
+
 }
 
 app.UseHttpsRedirection();
