@@ -41,14 +41,14 @@ namespace ClinicSystem.API.Controllers
             _context.Patients.Add(patient);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetPatient), new { id = patient.PatientId }, patient);
+            return CreatedAtAction(nameof(GetPatient), new { id = patient.Id }, patient);
 
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePatient(int id, Patient patient)
         {
-            if (id != patient.PatientId)
+            if (id != patient.Id)
                 return BadRequest();
 
             _context.Entry(patient).State = EntityState.Modified;

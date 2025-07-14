@@ -45,11 +45,11 @@ namespace ClinicSystem.API.Data
                 entity.ToTable("patient");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-                entity.Prooerty(e => e.FirstName).HasColumnName("first_name");
+                entity.Property(e => e.FirstName).HasColumnName("first_name");
                 entity.Property(e => e.LastName).HasColumnName("last_name");
                 entity.Property(e => e.DateOfBirth).HasColumnName("birth_date");
-                entity.Property(e => e.Gender).hasColumnName("gender");
-                entity.Property(e => e.Phone).HasCoulmnName("phone");
+                entity.Property(e => e.Gender).HasColumnName("gender");
+                entity.Property(e => e.Phone).HasColumnName("phone");
                 entity.Property(e => e.Email).HasColumnName("email");
                 entity.Property(e => e.Address).HasColumnName("address");
                 entity.Property(e => e.MaritalStatus).HasColumnName("marital_status");
