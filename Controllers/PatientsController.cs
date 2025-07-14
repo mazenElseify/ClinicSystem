@@ -38,6 +38,12 @@ namespace ClinicSystem.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Patient>> CreatePatient(Patient patient)
         {
+            if (patient.DateOfBirth == default)
+                return BadRequest("BirthDate is required");
+                
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             _context.Patients.Add(patient);
             await _context.SaveChangesAsync();
 

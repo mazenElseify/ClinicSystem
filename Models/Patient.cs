@@ -1,4 +1,6 @@
 using ClinicSystem.API.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace ClinicSystem.API.Models
@@ -8,7 +10,9 @@ namespace ClinicSystem.API.Models
         public int Id { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public DateTime DateOfBirth { get; set; }
+
+        [Column(TypeName = "date")]
+        public DateTime? DateOfBirth { get; set; } 
         public string Gender { get; set; } = null!;
         public string? Phone { get; set; }
         public String? Email { get; set; }
@@ -16,7 +20,7 @@ namespace ClinicSystem.API.Models
         public string? MaritalStatus { get; set; }
         public string? EmergencyContactName { get; set; }
         public string? EmergencyContactPhone { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
         public ICollection<Appointment>? Appointments { get; set; }
