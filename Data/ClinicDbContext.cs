@@ -58,6 +58,25 @@ namespace ClinicSystem.API.Data
                 entity.Property(e => e.CreatedAt).HasColumnName("created_date");
 
             });
+            modelBuilder.Entity<Appointment>(entity =>
+            {
+                entity.ToTable("appointment");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.PatientId).HasColumnName("patient_id");
+                entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
+                entity.Property(e => e.AppointmentDateTime).HasColumnName("appointment_date");
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.Reason).HasColumnName("reason");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_date");
+
+                 entity.HasOne(e => e.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(e => e.CreatedBy)
+                    .HasConstraintName("fk_appointment_created_by_user")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }
