@@ -5,7 +5,7 @@ namespace ClinicSystem.API.DTOs
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
         public DateTime VisitDate { get; set; }
-        public string Diagnosis { get; set; }
+        public string? Diagnosis { get; set; }
         public string? Treatment { get; set; }
         public int? CreatedBy { get; set; }
 
@@ -16,7 +16,7 @@ namespace ClinicSystem.API.DTOs
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
         public DateTime VisitDate { get; set; }
-        public string Diagnosis { get; set; }
+        public string? Diagnosis { get; set; }
         public string? Treatment { get; set; }
         public int? CretedBy { get; set; }
         

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ClinicSystem.API.Data;
 using ClinicSystem.API.Models;
 using ClinicSystem.API.DTOs;
-using AutoMaooer;
+using AutoMapper;
 
 namespace ClinicSystem.API.Controllers
 {
@@ -38,7 +38,7 @@ namespace ClinicSystem.API.Controllers
         }
 
         [HttpGet("patient/{patientId}")]
-        public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetMedicalRecordByPatient(int id)
+        public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetMedicalRecordByPatient(int patientId)
         {
             return await _context.MedicalRecords
                 .Where(r => r.PatientId == patientId)
@@ -48,7 +48,7 @@ namespace ClinicSystem.API.Controllers
         [HttpPost]
         public async Task<ActionResult<MedicalRecord>> CreateMedicalRecord(MedicalRecordDto dto)
         {
-            var record = _mapper.Map<GetMedicalRecordById>(dto);
+            var record = _mapper.Map<MedicalRecord>(dto);
             _context.MedicalRecords.Add(record);
             await _context.SaveChangesAsync();
 
@@ -60,19 +60,19 @@ namespace ClinicSystem.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-                
+
             var record = await _context.MedicalRecords.FindAsync(id);
             if (record == null)
                 return NotFound();
 
-            _mapper.Map(updateDto, record);
+            _mapper.Map(dto, record);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.MedicalRecord.Any(e => e.Id == id))
+                if (!_context.MedicalRecords.Any(e => e.Id == id))
                     return NotFound();
                 else
                     throw;    
@@ -86,7 +86,10 @@ namespace ClinicSystem.API.Controllers
             var record = await _context.MedicalRecords.FindAsync(id);
             if (record == null)
                 return NotFound();
-            _context.SaveChangesAsync();
+
+            _context.MedicalRecords.Remove(record);
+            await _context.SaveChangesAsync();
+            
 
             return NoContent();
         }
