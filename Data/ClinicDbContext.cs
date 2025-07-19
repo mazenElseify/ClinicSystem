@@ -71,10 +71,32 @@ namespace ClinicSystem.API.Data
                 entity.Property(e => e.CreatedBy).HasColumnName("created_by");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_date");
 
-                 entity.HasOne(e => e.CreatedByUser)
+                entity.HasOne(e => e.CreatedByUser)
+                   .WithMany()
+                   .HasForeignKey(e => e.CreatedBy)
+                   .HasConstraintName("fk_appointment_created_by_user")
+                   .OnDelete(DeleteBehavior.Restrict);
+            });
+            modelBuilder.Entity<MedicalRecord>(entity =>
+            {
+                entity.ToTable("medical_record");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.PatientId).HasColumnName("patient_id");
+                entity.Property(e => e.Diagnosis).HasColumnName("diagnosis");
+                entity.Property(e => e.Treatment).HasColumnName("treatment");
+                entity.Property(e => e.Notes).HasColumnName("notes");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_date");
+
+                entity.HasOne(e => e.Patient)
+                    .WithMany()
+                    .HasForeignKey(e => e.PatientId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.CreatedByUser)
                     .WithMany()
                     .HasForeignKey(e => e.CreatedBy)
-                    .HasConstraintName("fk_appointment_created_by_user")
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
