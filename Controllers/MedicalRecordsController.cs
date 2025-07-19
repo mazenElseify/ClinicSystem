@@ -58,6 +58,9 @@ namespace ClinicSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMedicalRecord(int id, UpdateMedicalRecordDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+                
             var record = await _context.MedicalRecords.FindAsync(id);
             if (record == null)
                 return NotFound();
