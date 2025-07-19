@@ -62,8 +62,18 @@ namespace ClinicSystem.API.Controllers
             if (record == null)
                 return NotFound();
 
-            _mapper.Map(dto, record);
-            await _context.SaveChangesAsync();
+            _mapper.Map(updateDto, record);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.MedicalRecord.Any(e => e.Id == id))
+                    return NotFound();
+                else
+                    throw;    
+            }
 
             return NoContent();
         }
