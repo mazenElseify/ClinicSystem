@@ -8,7 +8,7 @@ namespace ClinicSystem.API.Models
         public int Id { get; set; }
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
-        public DateTime RecordDate { get; set; } = DateTime.Now;
+        public DateTime VisitDate { get; set; } = DateTime.Now;
         public string? Diagnosis { get; set; }
         public String? Symptoms { get; set; }
         public string? Allergies { get; set; }
