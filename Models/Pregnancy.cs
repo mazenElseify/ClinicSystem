@@ -5,7 +5,7 @@ namespace ClinicSystem.API.Models
 {
     public class Pregnancy
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public int PatientId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime ExpectedDueDate { get; set; }

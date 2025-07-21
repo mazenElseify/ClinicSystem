@@ -14,7 +14,7 @@ namespace ClinicSystem.API.Models
         public string Status { get; set; } = "Scheduled";
         public string? Reason { get; set; }
         public int? CreatedBy { get; set; }
-        
+
         // [Column(TypeName = "timestamp without time zone")]
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -26,6 +26,9 @@ namespace ClinicSystem.API.Models
 
         // [JsonIgnore]
         public User? CreatedByUser { get; set; }
+        public ICollection<Prescription>? Prescriptions { get; set; }
+        public ICollection<Invoice>? Invoices { get; set; }
+
     }
 
 }

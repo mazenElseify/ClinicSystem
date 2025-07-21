@@ -18,8 +18,8 @@ namespace ClinicSystem.API.Models
         public string? MaritalStatus { get; set; }
     
         public ICollection<Appointment>? Appointments { get; set; }
-        public ICollection<MedicalRecord>? MedicalRecords { get; set; }
-        public ICollection<Prescription>? prescriptions { get; set; }
+        public ICollection<MedicalRecord> DoctorMedicalRecords { get; set; } = new List<MedicalRecord>();
+        public ICollection<Prescription>? Prescriptions { get; set; }
 
     }
 

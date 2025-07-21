@@ -12,7 +12,7 @@ namespace ClinicSystem.API.Models
         public string LastName { get; set; } = null!;
 
         [Column(TypeName = "date")]
-        public DateTime? DateOfBirth { get; set; } 
+        public DateTime? DateOfBirth { get; set; }
         public string Gender { get; set; } = null!;
         public string? Phone { get; set; }
         public String? Email { get; set; }
@@ -24,9 +24,14 @@ namespace ClinicSystem.API.Models
 
 
         public ICollection<Appointment>? Appointments { get; set; }
-        public ICollection<MedicalRecord>? MedicalRecords { get; set; }
+        public ICollection<MedicalRecord> PatientMedicalRecords { get; set; } = new List<MedicalRecord>();
+
         public ICollection<Prescription>? Prescriptions { get; set; }
         public ICollection<Invoice>? Invoices { get; set; }
+        public ICollection<LabTest>? LabTests { get; set; }
+        public ICollection<FileUpload>? FileUploads { get; set; }
+
+
 
     }
 

@@ -7,7 +7,7 @@ namespace ClinicSystem.API.Models
     {
         public int Id { get; set; }
         public int PatientId { get; set; }
-        public int? manarcheAge { get; set; }
+        public int? ManarcheAge { get; set; }
         public int? CycleLength { get; set; }
         public bool? CycleRegular { get; set; }
         public DateTime? LastMenstralPeriod { get; set; }
