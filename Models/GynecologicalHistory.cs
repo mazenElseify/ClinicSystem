@@ -3,7 +3,7 @@ using ClinicSystem.API.Models;
 
 namespace ClinicSystem.API.Models
 {
-    public class GynocologicalHistory
+    public class GynecologicalHistory
     {
         public int Id { get; set; }
         public int PatientId { get; set; }
