@@ -1,6 +1,6 @@
 namespace ClinicSystem.API.DTOs
 {
-    public class InvoceDto
+    public class InvoiceDto
     {
         public int PatientId { get; set; }
         public int AppointmentId { get; set; }
@@ -12,7 +12,7 @@ namespace ClinicSystem.API.DTOs
         public string? Notes { get; set; }
 
     }
-    public class UpdateInvoceDto
+    public class UpdateInvoiceDto
     {
         public decimal PaidAmount { get; set; }
         public string? Status { get; set; }
@@ -27,7 +27,7 @@ namespace ClinicSystem.API.DTOs
         public DateTime IssueDate { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal PaidAmount { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; }
         public string? PaymentMethod { get; set; }
         public string? Notes { get; set; }
 

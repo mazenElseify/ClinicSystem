@@ -1,6 +1,6 @@
 namespace ClinicSystem.API.DTOs
 {
-    public class AntenatalVissitDto
+    public class AntenatalVisitDto
     {
         public int PregnancyId { get; set; }
         public DateTime VisitDate { get; set; }

@@ -1,14 +1,14 @@
-namespace CLinicSytem.API.DTOs
+namespace ClinicSystem.API.DTOs
 {
     public class FileUploadDto
     {
         public int PatientId { get; set; }
         public string FileName { get; set; } = null!;
         public string FileType { get; set; } = null!;
-        public DateTime UploadDate { get; set; } = DateTime.UtcNow;
-        public int? UploaderBy { get; set; }
+        public DateTime UploadDate { get; set; } 
+        public int? UploadedBy { get; set; }
         public string? Description { get; set; }
-        public string? FilePath { get; set; } = null!;
+        public string? FilePath { get; set; }
 
     }
     public class UpdateFileUploadDto
@@ -20,13 +20,13 @@ namespace CLinicSytem.API.DTOs
     {
         public int Id { get; set; }
         public int PatientId { get; set; }
-        public string FileName { get; set; }
-        public string FileType { get; set; }
-        public DateTime UploadDate { get; set; }
+        public string? FileName { get; set; }
+        public string? FileType { get; set; }
+        public DateTime UploadDate { get; set; } 
         public int? UploadedBy { get; set; }
         public string? UploadedByUserName { get; set; }
         public string? Description { get; set; }
-        public string? FilePAth { get; set; }
+        public string? FilePath { get; set; }
         
 
     }

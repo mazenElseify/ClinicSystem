@@ -5,8 +5,8 @@ namespace ClinicSystem.API.DTOs
         public int PatientId { get; set; }
         public string TestName { get; set; } = null!;
         public string? Result { get; set; }
-        public dateTime? ResultDate { get; set; }
-        public int? RequestByDoctorId { get; set; }
+        public DateTime? ResultDate { get; set; }
+        public int? RequestedByDoctorId { get; set; }
         public string? Notes { get; set; }
 
     }
@@ -14,13 +14,13 @@ namespace ClinicSystem.API.DTOs
     {
         public string TestName { get; set; } = null!;
         public string? Result { get; set; }
-        public DateTime ResultDate { get; set; }
-        public int? RequestedDoctorId { get; set; }
+        public DateTime? ResultDate { get; set; }
+        public int? RequestedByDoctorId { get; set; }
         public string? Notes { get; set; }
 
 
     }
-    public class LabtestDedailsDto
+    public class LabTestDetailsDto
     {
         public int Id { get; set; }
         public int PatientId { get; set; }

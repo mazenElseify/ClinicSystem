@@ -13,7 +13,7 @@ namespace ClinicSystem.API.Mapping
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<UpdateAppointmentDto, Appointment>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-            CreateMap<Appointment, AppointmentRecordDto>();
+            CreateMap<Appointment, AppointmentDto>();
 
             // MedicalRecord Mapper
             CreateMap<MedicalRecordDto, MedicalRecord>();
@@ -31,7 +31,7 @@ namespace ClinicSystem.API.Mapping
             // Pregnancy
             CreateMap<PregnancyDto, Pregnancy>();
             CreateMap<UpdatePregnancyDto, Pregnancy>()
-                .ForMember(dest => dest.Id, opt => opt.ignore());
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<Pregnancy, PregnancyDto>();
 
             // AntenatalVisit
@@ -42,7 +42,7 @@ namespace ClinicSystem.API.Mapping
 
             // LabTest
             CreateMap<LabTestDto, LabTest>();
-            CreateMap<UpdateLabTest, LabTest>()
+            CreateMap<UpdateLabTestDto, LabTest>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<LabTest, LabTestDto>();
 
@@ -62,13 +62,13 @@ namespace ClinicSystem.API.Mapping
             CreateMap<PrescriptionDto, Prescription>();
             CreateMap<UpdatePrescriptionDto, Prescription>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-            Create<Prescription, PrescriptionDto>();
+            CreateMap<Prescription, PrescriptionDto>();
 
             // Invoice
             CreateMap<InvoiceDto, Invoice>();
             CreateMap<UpdateInvoiceDto, Invoice>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-            CreateMap<Invoice, invoiceDto>();
+            CreateMap<Invoice, InvoiceDto>();
 
             // FileUpload
             CreateMap<FileUploadDto, FileUpload>();
@@ -78,7 +78,7 @@ namespace ClinicSystem.API.Mapping
 
             // Notification 
             CreateMap<NotificationDto, Notification>();
-            CreateMap<UpdateNotification, Notification>()
+            CreateMap<UpdateNotificationDto, Notification>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<Notification, NotificationDto>();
             

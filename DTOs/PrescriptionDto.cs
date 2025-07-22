@@ -5,7 +5,7 @@ namespace ClinicSystem.API.DTOs
         public int AppointmentId { get; set; }
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
-        public DateTime PrescriptionDate { get; set; } = DateTime.Utc.Now;
+        public DateTime PrescriptionDate { get; set; } = DateTime.UtcNow;
         public string MedicationName { get; set; } = null!;
         public string? Dosage { get; set; }
         public string? Frequency { get; set; }
@@ -16,7 +16,7 @@ namespace ClinicSystem.API.DTOs
     }
     public class UpdatePrescriptionDto
     {
-        public string MedicationName { get; set; }
+        public string? MedicationName { get; set; }
         public string? Dosage { get; set; }
         public string? Frequency { get; set; }
         public string? Duration { get; set; }
@@ -29,7 +29,7 @@ namespace ClinicSystem.API.DTOs
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
         public DateTime PrescriptionDate { get; set; }
-        public string MedicationNaem { get; set; }
+        public string? MedicationName { get; set; }
         public string? Dosage { get; set; }
         public string? Frequency { get; set; }
         public string? Duration { get; set; }

@@ -18,7 +18,7 @@ namespace ClinicSystem.API.Data
         public DbSet<ObstetricHistory> ObstetricHistories { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<LabTest> LabTests { get; set; }
-        public DbSet<GynocologicalHistory> GynocologicalHistories { get; set; }
+        public DbSet<GynecologicalHistory> GynecologicalHistories { get; set; }
         public DbSet<FileUpload> FileUploads { get; set; }
         public DbSet<AntenatalVisit> AntenatalVisits { get; set; }
 
@@ -189,7 +189,7 @@ namespace ClinicSystem.API.Data
                 entity.Property(e => e.IsActive).HasColumnName("is_active");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             });
-            modelBuilder.Entity<GynocologicalHistory>(entity =>
+            modelBuilder.Entity<GynecologicalHistory>(entity =>
             {
                 entity.ToTable("gynocological_history");
 

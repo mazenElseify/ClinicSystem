@@ -1,6 +1,6 @@
-namespace ClinicSystem.DTOs
+namespace ClinicSystem.API.DTOs
 {
-    public class NotifictionDto
+    public class NotificationDto
     {
         public int UserId { get; set; }
         public string Message { get; set; } = null!;
