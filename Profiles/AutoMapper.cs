@@ -11,22 +11,78 @@ namespace ClinicSystem.API.Mapping
             // Appointment Mapper
             CreateMap<AppointmentDto, Appointment>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
-            CreateMap<UpdateAppointmentDto, Appointment>();
+            CreateMap<UpdateAppointmentDto, Appointment>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<Appointment, AppointmentRecordDto>();
+
             // MedicalRecord Mapper
             CreateMap<MedicalRecordDto, MedicalRecord>();
-
             CreateMap<UpdateMedicalRecordDto, MedicalRecord>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-
             CreateMap<MedicalRecord, MedicalRecordDto>();
             // User Mapper
             CreateMap<UserDto, User>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapForm(src => DateTime.UtcNow))
-                .ForMember(dest => dest.IsActive, opt => opt.MapForm(src => true));
-
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true));
             CreateMap<UpdateUserDto, User>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<User, UserDto>();
+
+            // Pregnancy
+            CreateMap<PregnancyDto, Pregnancy>();
+            CreateMap<UpdatePregnancyDto, Pregnancy>()
+                .ForMember(dest => dest.Id, opt => opt.ignore());
+            CreateMap<Pregnancy, PregnancyDto>();
+
+            // AntenatalVisit
+            CreateMap<AntenatalVisitDto, AntenatalVisit>();
+            CreateMap<UpdateAntenatalVisitDto, AntenatalVisit>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<AntenatalVisit, AntenatalVisitDto>();
+
+            // LabTest
+            CreateMap<LabTestDto, LabTest>();
+            CreateMap<UpdateLabTest, LabTest>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<LabTest, LabTestDto>();
+
+            // GynecologicalHistory
+            CreateMap<GynecologicalHistoryDto, GynecologicalHistory>();
+            CreateMap<UpdateGynecologicalHistoryDto, GynecologicalHistory>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<GynecologicalHistory, GynecologicalHistoryDto>();
+
+            // ObstetricalHistory
+            CreateMap<ObstetricHistoryDto, ObstetricHistory>();
+            CreateMap<UpdateObstetricHistoryDto, ObstetricHistory>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<ObstetricHistory, ObstetricHistoryDto>();
+
+            // Prescription
+            CreateMap<PrescriptionDto, Prescription>();
+            CreateMap<UpdatePrescriptionDto, Prescription>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            Create<Prescription, PrescriptionDto>();
+
+            // Invoice
+            CreateMap<InvoiceDto, Invoice>();
+            CreateMap<UpdateInvoiceDto, Invoice>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<Invoice, invoiceDto>();
+
+            // FileUpload
+            CreateMap<FileUploadDto, FileUpload>();
+            CreateMap<UpdateFileUploadDto, FileUpload>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<FileUpload, FileUploadDto>();
+
+            // Notification 
+            CreateMap<NotificationDto, Notification>();
+            CreateMap<UpdateNotification, Notification>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<Notification, NotificationDto>();
+            
+
         }
     }
 }
