@@ -5,16 +5,17 @@ using ClinicSystem.API.DTOs;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace ClinicSystem.API.Controllers
 {
-    [Route("(api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly ClinicDbContext _context;
         private readonly IMapper _mapper;
 
-        public UserController(ClinicDbContext context, IMapper mapper)
+        public UsersController(ClinicDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -41,6 +42,8 @@ namespace ClinicSystem.API.Controllers
         public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

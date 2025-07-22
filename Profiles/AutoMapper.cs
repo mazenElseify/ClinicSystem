@@ -21,6 +21,7 @@ namespace ClinicSystem.API.Mapping
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<MedicalRecord, MedicalRecordDto>();
             // User Mapper
+            CreateMap<CreateUserDto, User>();
             CreateMap<UserDto, User>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true));
