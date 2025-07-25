@@ -1,6 +1,6 @@
 // config.js
 const API_BASE_URL = import.meta.env.MODE === "development"
-  ? "http://localhost:5000"
+  ? "https://localhost:5001/api"
   : "https://your-production-api.com";
 
 export default API_BASE_URL;
