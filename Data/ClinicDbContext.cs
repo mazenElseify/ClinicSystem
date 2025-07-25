@@ -178,7 +178,7 @@ namespace ClinicSystem.API.Data
             });
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("user");
+                entity.ToTable("users");
 
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.UserName).HasColumnName("user_name");
