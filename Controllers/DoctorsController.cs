@@ -2,10 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClinicSystem.API.Data;
 using ClinicSystem.API.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 
 namespace ClinicSystem.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DoctorsController : ControllerBase
@@ -23,6 +26,7 @@ namespace ClinicSystem.API.Controllers
             return await _context.Doctors.ToListAsync();
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Doctor>> GetDoctor(int id)
         {
@@ -34,6 +38,7 @@ namespace ClinicSystem.API.Controllers
             return Ok(doctor);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Doctor>> CreateDoctor(Doctor doctor)
         {
@@ -43,6 +48,7 @@ namespace ClinicSystem.API.Controllers
             return CreatedAtAction(nameof(GetDoctor), new { id = doctor.Id }, doctor);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDoctor(int id, Doctor doctor)
         {
@@ -67,6 +73,7 @@ namespace ClinicSystem.API.Controllers
 
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor(int id)
         {

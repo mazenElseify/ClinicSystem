@@ -4,9 +4,11 @@ using ClinicSystem.API.Data;
 using ClinicSystem.API.Models;
 using AutoMapper;
 using ClinicSystem.API.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicSystem.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AppointmentsController : ControllerBase
@@ -25,6 +27,7 @@ namespace ClinicSystem.API.Controllers
         {
             return await _context.Appointments.ToListAsync();
         }
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Appointment>> GetAppointment(int id)
         {
@@ -35,6 +38,7 @@ namespace ClinicSystem.API.Controllers
 
             return Ok(appointment);
         }
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Appointment>> CreateAppointment(AppointmentDto appointmentDto)
         {
@@ -45,6 +49,7 @@ namespace ClinicSystem.API.Controllers
 
             return CreatedAtAction(nameof(GetAppointment), new { id = appointment.Id }, appointment);
         }
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAppointment(int id, UpdateAppointmentDto appointment)
         {
@@ -72,6 +77,7 @@ namespace ClinicSystem.API.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
@@ -85,6 +91,7 @@ namespace ClinicSystem.API.Controllers
             return NoContent();
         }
         // GET: api/appointments/patient/5
+        [Authorize]
         [HttpGet("patient/{patientId}")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentByPatient(int patientId)
         {
@@ -93,6 +100,7 @@ namespace ClinicSystem.API.Controllers
                 .ToListAsync();
         }
         // GET: api/appointments/filter?date=2025-07-07&status=Scheduled
+        [Authorize]
         [HttpGet("filter")]
         public async Task<ActionResult<IEnumerable<Appointment>>> FilterAppointments(DateTime? date, string? status)
         {

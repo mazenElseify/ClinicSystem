@@ -4,9 +4,11 @@ using ClinicSystem.API.Data;
 using ClinicSystem.API.Models;
 using ClinicSystem.API.DTOs;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicSystem.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MedicalRecordsController : ControllerBase
@@ -20,12 +22,14 @@ namespace ClinicSystem.API.Controllers
             _mapper = mapper;
 
         }
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetAllMedicalRecords()
         {
             return await _context.MedicalRecords.ToListAsync();
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<MedicalRecord>> GetMedicalRecordById(int id)
         {
@@ -37,6 +41,7 @@ namespace ClinicSystem.API.Controllers
             return Ok(record);
         }
 
+        [Authorize]
         [HttpGet("patient/{patientId}")]
         public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetMedicalRecordByPatient(int patientId)
         {
@@ -45,6 +50,7 @@ namespace ClinicSystem.API.Controllers
                 .ToListAsync();
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<MedicalRecord>> CreateMedicalRecord(MedicalRecordDto dto)
         {
@@ -55,6 +61,7 @@ namespace ClinicSystem.API.Controllers
             return CreatedAtAction(nameof(GetMedicalRecordById), new { id = record.Id }, record);
 
         }
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMedicalRecord(int id, UpdateMedicalRecordDto dto)
         {
@@ -80,6 +87,7 @@ namespace ClinicSystem.API.Controllers
 
             return NoContent();
         }
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMedicalRecord(int id)
         {
