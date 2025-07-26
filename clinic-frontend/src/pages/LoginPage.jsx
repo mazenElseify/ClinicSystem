@@ -41,7 +41,7 @@ function LoginPage({ setUser }) {
         onSubmit={handleLogin}
         className="bg-white p-8 rounded shadow-md w-full max-w-md"
       >
-        <h2 className="text-2xl font-bold text-center mb-6 text-pink-600">
+        <h2 className="text-2xl font-bold text-center mb-6 text-blue-600">
           Login to Clinic System
         </h2>
 
@@ -75,7 +75,7 @@ function LoginPage({ setUser }) {
 
         <button
           type="submit"
-          className="w-full bg-pink-600 text-white py-2 rounded hover:bg-pink-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           Login
         </button>

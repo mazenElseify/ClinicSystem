@@ -50,7 +50,7 @@ function RegisterPage() {
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow">
-      <h2 className="text-xl font-bold mb-4 text-pink-600">Create a New Account</h2>
+      <h2 className="text-xl font-bold mb-4 text-blue-600">Create a New Account</h2>
       {error && <div className="text-red-500 mb-2">{error}</div>}
       <form onSubmit={handleRegister} className="space-y-4">
         <input
@@ -100,7 +100,7 @@ function RegisterPage() {
         </select>
         <button
           type="submit"
-          className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Register
         </button>

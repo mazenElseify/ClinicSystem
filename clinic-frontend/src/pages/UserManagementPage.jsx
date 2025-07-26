@@ -72,6 +72,8 @@ const UserManagementPage = () => {
   // Create user
   const handleCreateUser = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
+    
     if (newUser.role === "Doctor") {
       // Open doctor modal, prefill, but do NOT create user yet
       setDoctorDetails((prev) => ({
@@ -420,7 +422,7 @@ const UserManagementPage = () => {
             onSubmit={handleDoctorSubmit}
             className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md"
           >
-            <h2 className="text-xl font-bold mb-4 text-pink-600">Doctor Details</h2>
+            <h2 className="text-xl font-bold mb-4 text-blue-600">Doctor Details</h2>
             <input
               name="firstName"
               value={doctorDetails.firstName}

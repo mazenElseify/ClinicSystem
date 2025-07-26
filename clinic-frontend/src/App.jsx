@@ -6,9 +6,10 @@ import {
   Link,
   Navigate,
   useLocation,
+  useNavigate,
 } from 'react-router-dom';
 
-import UserManagementPage from './pages/UserManagementPage.jsx';
+import UserManagementPage from './pages/UsermanagementPage.jsx';
 import DoctorsPage from './pages/DoctorsPage.jsx';
 import AppointmentsPage from './pages/AppointmentsPage.jsx';
 import PatientsPage from './pages/PatientsPage.jsx';
@@ -23,6 +24,7 @@ function PrivateRoute({ children }) {
 }
 
 function App() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   // Load user from localStorage on app start
@@ -39,38 +41,39 @@ function App() {
   }, []);
 
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setUser(null);
+    navigate("/login");
   };
 
   return (
-    <Router>
       <div className="min-h-screen flex flex-col">
         {/* Header */}
         {isAuthenticated() && (
           <header className="bg-white shadow p-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-pink-600">Women's Clinic</h1>
+            <h1 className="text-2xl font-bold text-blue-600">Women's Clinic</h1>
             <nav className="space-x-4">
-              <Link to="/home" className="text-gray-600 hover:text-pink-600">
+              <Link to="/home" className="text-gray-600 hover:text-blue-600">
                 Home
               </Link>
-              <Link to="/doctors" className="text-gray-600 hover:text-pink-600">
+              <Link to="/doctors" className="text-gray-600 hover:text-blue-600">
                 Doctors
               </Link>
-              <Link to="/appointments" className="text-gray-600 hover:text-pink-600">
+              <Link to="/appointments" className="text-gray-600 hover:text-blue-600">
                 Appointments
               </Link>
-              <Link to="/patients" className="text-gray-600 hover:text-pink-600">
+              <Link to="/patients" className="text-gray-600 hover:text-blue-600">
                 Patients
               </Link>
               {user?.role === 'Admin' && (
-                <Link to="/users" className="text-gray-600 hover:text-pink-600">
+                <Link to="/users" className="text-gray-600 hover:text-blue-600">
                   Users
                 </Link>
               )}
               <button
                 onClick={handleLogout}
-                className="text-gray-600 hover:text-red-600 ml-4"
+                className="bg-red-600 hover:text-white px-4 py-2 rounded ml-4"
               >
                 Logout
               </button>
@@ -139,7 +142,6 @@ function App() {
           © {new Date().getFullYear()} Women’s Clinic. All rights reserved.
         </footer>
       </div>
-    </Router>
   );
 }
 
