@@ -10,29 +10,24 @@ function LoginPage({ setUser }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setError("");
     try {
       // Fetch all users (you can later improve this by making a login endpoint)
-      const res = await fetch(`${API_BASE_URL}/api/users`); // adjust if needed
-      const users = await res.json();
-
-      const foundUser = users.find((u) => u.userName === username);
-      if (!foundUser) {
-        return setError("User not found.");
+      const res = await fetch(`${API_BASE_URL}/users/login`, {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify({ userName: username, password}),
+      }); // adjust if needed
+      if (!res.ok) {
+        const errData = await res.json();
+        setError(errData.message || "Login failed.");
+        return;
       }
+      const user = await res.json();
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
+      navigate("/home");
 
-      // Check password using bcrypt in browser
-      const bcrypt = await import("bcryptjs"); // dynamic import to avoid SSR issues
-      const isMatch = await bcrypt.compare(password, foundUser.passwordHash);
-
-      if (!isMatch) {
-        return setError("Incorrect password.");
-      }
-
-      // Save user to localStorage
-      localStorage.setItem("user", JSON.stringify(foundUser));
-      setUser(foundUser);
-      navigate("/doctors");
     } catch (err) {
       console.error(err);
       setError("Login failed. Please try again.");

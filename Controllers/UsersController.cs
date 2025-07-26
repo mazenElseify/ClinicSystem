@@ -76,6 +76,31 @@ namespace ClinicSystem.API.Controllers
 
             return NoContent();
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+            if (user == null)
+                return Unauthorized(new { message = "User not found." });
+
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+                return Unauthorized(new { message = "Incorrect password." });
+            return Ok(new
+            {
+                id = user.Id,
+                userName = user.UserName,
+                email = user.Email,
+                role = user.Role,
+                phone = user.Phone,
+                isActive = user.IsActive
+            });
+        }
+
+        public class LoginRequest
+        {
+            public string UserName { get; set; } = null!;
+            public string Password { get; set; } = null!;
+        }
 
     }
 }

@@ -182,7 +182,7 @@ const UserManagementPage = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">User Management</h2>
+      <h2 className="text-2xl font-bold mb-4">Users Management</h2>
 
       {/* Create New User */}
       <div className="bg-gray-100 p-4 rounded shadow mb-6">
