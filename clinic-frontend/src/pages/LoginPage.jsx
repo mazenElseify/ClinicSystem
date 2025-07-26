@@ -25,6 +25,7 @@ function LoginPage({ setUser }) {
       }
       const user = await res.json();
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", user.token);
       setUser(user);
       navigate("/home");
 

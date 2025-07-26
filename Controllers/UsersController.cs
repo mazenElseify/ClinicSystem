@@ -121,7 +121,7 @@ namespace ClinicSystem.API.Controllers
                 new Claim("id", user.Id.ToString()),
                 new Claim("role", user.Role)
             };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeepItSimpleStupid.2511"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeepItSimpleStupid.25112025@KISS"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

@@ -51,8 +51,13 @@ const UserManagementPage = () => {
   // Fetch users
   const fetchUsers = async () => {
     setLoading(true);
+    const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(`${API_BASE_URL}/users`);
+      const response = await axios.get(`${API_BASE_URL}/users`,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      });
       setUsers(response.data);
     } catch (error) {
       console.error("Failed to fetch users", error);
@@ -78,7 +83,9 @@ const UserManagementPage = () => {
     } else {
       // Create user as usual
       try {
-        await axios.post(`${API_BASE_URL}/users`, newUser);
+        await axios.post(`${API_BASE_URL}/users`, newUser, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         fetchUsers();
         setNewUser({
           userName: "",
@@ -99,14 +106,18 @@ const UserManagementPage = () => {
 
   const handleDoctorSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
     try {
       // 1. Create user
-      const userRes = await axios.post(`${API_BASE_URL}/users`, newUser);
+      const userRes = await axios.post(`${API_BASE_URL}/users`, newUser
+      );
       const createdUser = userRes.data;
       // 2. Create doctor
       await axios.post(`${API_BASE_URL}/doctors`, {
         ...doctorDetails,
         userId: createdUser.id,
+      }, {
+        headers: {authorization: `Bearer ${token}`}
       });
       setShowDoctorModal(false);
       setDoctorDetails({
@@ -152,8 +163,11 @@ const UserManagementPage = () => {
   const cancelEditing = () => setEditingUser(null);
 
   const handleUpdateUser = async () => {
+    const token = localStorage.getItem("token");
     try {
-      await axios.put(`${API_BASE_URL}/users/${editingUser.id}`, editingUser);
+      await axios.put(`${API_BASE_URL}/users/${editingUser.id}`, editingUser, {
+        headers: {Authorization: `Bearer ${token}`}
+      });
       fetchUsers();
       setEditingUser(null);
     } catch (error) {
@@ -163,8 +177,12 @@ const UserManagementPage = () => {
 
   // Delete user
   const handleDeleteUser = async () => {
+    const token = localStorage.getItem("token");
     try {
-      await axios.delete(`${API_BASE_URL}/users/${userToDelete.id}`);
+      
+      await axios.delete(`${API_BASE_URL}/users/${userToDelete.id}`, {
+        headers: {Authorization: `Bearer ${token}` }
+      });
       fetchUsers();
       setShowDeleteModal(false);
       setUserToDelete(null);
