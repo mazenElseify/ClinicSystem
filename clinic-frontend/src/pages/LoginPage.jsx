@@ -28,6 +28,16 @@ function LoginPage({ setUser }) {
       localStorage.setItem("token", user.token);
       setUser(user);
       navigate("/home");
+      
+      if (user.role === "Doctor") {
+        // Fetch doctor profile and set doctorId in user object
+        const doctorRes = await axios.get(`${API_BASE_URL}/doctors/by-user/${user.id}`, {
+          headers: { Authorization: `Bearer ${user.token}` }
+        });
+        user.doctorId = doctorRes.data.id;
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user); // update state
+      }
 
     } catch (err) {
       console.error(err);

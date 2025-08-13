@@ -216,10 +216,10 @@ namespace ClinicSystem.API.Data
 
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.PatientId).HasColumnName("patient_id");
-                entity.Property(e => e.Gravida).HasColumnName("gravida");
-                entity.Property(e => e.Para).HasColumnName("para");
-                entity.Property(e => e.Abortions).HasColumnName("abortions");
-                entity.Property(e => e.LivingChildren).HasColumnName("living_children");
+                // entity.Property(e => e.Gravida).HasColumnName("gravida");
+                // entity.Property(e => e.Para).HasColumnName("para");
+                // entity.Property(e => e.Abortions).HasColumnName("abortions");
+                // entity.Property(e => e.LivingChildren).HasColumnName("living_children");
                 entity.Property(e => e.EctopicPregnancies).HasColumnName("ectopic_pregnancies");
                 entity.Property(e => e.Stillbirths).HasColumnName("stillbirths");
                 entity.Property(e => e.LastDeliveryDate).HasColumnName("last_delivery_date");

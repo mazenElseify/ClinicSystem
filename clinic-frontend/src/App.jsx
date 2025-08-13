@@ -17,6 +17,20 @@ import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import { isAuthenticated, logout } from './utils/auth';
 import RegisterPage from './pages/RegisterPage.jsx';
+import DoctorDashboardPage from './pages/DoctorDashboardPage.jsx';
+import axios from "axios";
+
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem("token");
+      window.location.href = "/login"; // or your login route
+    }
+    return Promise.reject(error);
+  }
+);
 
 
 function PrivateRoute({ children }) {
@@ -57,8 +71,10 @@ function App() {
               <Link to="/home" className="text-gray-600 hover:text-blue-600">
                 Home
               </Link>
-              <Link to="/doctors" className="text-gray-600 hover:text-blue-600">
-                Doctors
+              <Link to="/doctors"
+               className="text-gray-600 hover:text-blue-600"
+              >
+                {user?.role?.toLowerCase() === "doctor" ? "Dashboard" : "Doctors"}
               </Link>
               <Link to="/appointments" className="text-gray-600 hover:text-blue-600">
                 Appointments
@@ -103,7 +119,9 @@ function App() {
               path="/doctors"
               element={
                 <PrivateRoute>
-                  <DoctorsPage user={user} />
+                  {user?.role?.toLowerCase() === "doctor"
+                    ? <DoctorDashboardPage user={user} />
+                    : <DoctorsPage user={user} />}
                 </PrivateRoute>
               }
             />

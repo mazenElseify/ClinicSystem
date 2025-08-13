@@ -99,6 +99,15 @@ namespace ClinicSystem.API.Controllers
                 .Where(a => a.PatientId == patientId)
                 .ToListAsync();
         }
+        [Authorize]
+        [HttpGet("doctor/{doctorId}")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentByDoctor(int doctorId)
+        {
+            return await _context.Appointments
+                .Where(a => a.DoctorId == doctorId)
+                .ToListAsync(); 
+
+        }
         // GET: api/appointments/filter?date=2025-07-07&status=Scheduled
         [Authorize]
         [HttpGet("filter")]

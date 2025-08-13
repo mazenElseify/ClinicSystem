@@ -13,7 +13,7 @@ namespace ClinicSystem.API.Models
         public string? Phone { get; set; } 
         public String? Email { get; set; } 
         public String LicenseNumber { get; set; } = null!;
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string? MaritalStatus { get; set; }
     

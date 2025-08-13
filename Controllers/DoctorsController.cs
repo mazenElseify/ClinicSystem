@@ -86,6 +86,36 @@ namespace ClinicSystem.API.Controllers
 
             return NoContent();
         }
+        [Authorize]
+        [HttpGet("by-user/{userId}")]
+        public async Task<ActionResult<DoctorDto>> GetDoctorByUserId(int userId)
+        {
+            var doctor = await _context.Doctors
+                .Where(d => d.UserId == userId)
+                .Select(d => new DoctorDto
+                {
+                    Id = d.Id,
+                    FirstName = d.FirstName,
+                    LastName = d.LastName,
+                    Gender = d.Gender,
+                    Specialty = d.Specialty,
+                    Phone = d.Phone,
+                    Email = d.Email,
+                    LicenseNumber = d.LicenseNumber,
+                    UserId = d.UserId,
+                    CreatedAt = d.CreatedAt,
+                    MaritalStatus = d.MaritalStatus 
+
+                })
+                .FirstOrDefaultAsync();
+
+            if (doctor == null)
+            { 
+                Console.WriteLine($"No doctor found for userId: {userId}");
+                return NotFound();
+            }
+            return doctor;
+        }
 
         private bool DoctorExists(int id)
         {
