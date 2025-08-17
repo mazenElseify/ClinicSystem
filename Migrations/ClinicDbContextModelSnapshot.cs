@@ -161,7 +161,7 @@ namespace ClinicSystem.API.Migrations
                         .HasColumnType("text")
                         .HasColumnName("specialty");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
 
@@ -218,7 +218,7 @@ namespace ClinicSystem.API.Migrations
                     b.ToTable("file_upload", (string)null);
                 });
 
-            modelBuilder.Entity("ClinicSystem.API.Models.GynocologicalHistory", b =>
+            modelBuilder.Entity("ClinicSystem.API.Models.GynecologicalHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -478,10 +478,6 @@ namespace ClinicSystem.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Abortions")
-                        .HasColumnType("integer")
-                        .HasColumnName("abortions");
-
                     b.Property<string>("Complications")
                         .HasColumnType("text")
                         .HasColumnName("complications");
@@ -494,21 +490,9 @@ namespace ClinicSystem.API.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("ectopic_pregnancies");
 
-                    b.Property<int>("Gravida")
-                        .HasColumnType("integer")
-                        .HasColumnName("gravida");
-
                     b.Property<DateTime?>("LastDeliveryDate")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("last_delivery_date");
-
-                    b.Property<int>("LivingChildren")
-                        .HasColumnType("integer")
-                        .HasColumnName("living_children");
-
-                    b.Property<int>("Para")
-                        .HasColumnType("integer")
-                        .HasColumnName("para");
 
                     b.Property<int>("PatientId")
                         .HasColumnType("integer")
@@ -546,6 +530,10 @@ namespace ClinicSystem.API.Migrations
                         .HasColumnType("date")
                         .HasColumnName("birth_date");
 
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("integer")
+                        .HasColumnName("doctor_id");
+
                     b.Property<string>("Email")
                         .HasColumnType("text")
                         .HasColumnName("email");
@@ -582,6 +570,8 @@ namespace ClinicSystem.API.Migrations
                         .HasColumnName("phone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
 
                     b.ToTable("patient", (string)null);
                 });
@@ -721,7 +711,7 @@ namespace ClinicSystem.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("user", (string)null);
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("ClinicSystem.API.Models.AntenatalVisit", b =>
@@ -779,7 +769,7 @@ namespace ClinicSystem.API.Migrations
                     b.Navigation("UploadedByUser");
                 });
 
-            modelBuilder.Entity("ClinicSystem.API.Models.GynocologicalHistory", b =>
+            modelBuilder.Entity("ClinicSystem.API.Models.GynecologicalHistory", b =>
                 {
                     b.HasOne("ClinicSystem.API.Models.Patient", "Patient")
                         .WithMany()
@@ -874,6 +864,17 @@ namespace ClinicSystem.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("ClinicSystem.API.Models.Patient", b =>
+                {
+                    b.HasOne("ClinicSystem.API.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("ClinicSystem.API.Models.Pregnancy", b =>

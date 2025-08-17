@@ -8,6 +8,17 @@ namespace ClinicSystem.API.Mapping
     {
         public AutoMapperProfile()
         {
+            // Patient mappings
+            CreateMap<PatientDto, Patient>().ReverseMap();
+            CreateMap<CreatePatientDto, Patient>();
+            CreateMap<UpdatePatientDto, Patient>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            // Doctor mappings
+            CreateMap<DoctorDto, Doctor>().ReverseMap();
+            CreateMap<CreateDoctorDto, Doctor>();
+            CreateMap<UpdateDoctorDto, Doctor>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
             // Appointment Mapper
             CreateMap<AppointmentDto, Appointment>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));

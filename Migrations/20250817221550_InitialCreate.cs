@@ -25,7 +25,7 @@ namespace ClinicSystem.API.Migrations
                     phone = table.Column<string>(type: "text", nullable: true),
                     email = table.Column<string>(type: "text", nullable: true),
                     license_number = table.Column<string>(type: "text", nullable: false),
-                    user_id = table.Column<int>(type: "integer", nullable: true),
+                    user_id = table.Column<int>(type: "integer", nullable: false),
                     created_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     marital_status = table.Column<string>(type: "text", nullable: true)
                 },
@@ -35,30 +35,7 @@ namespace ClinicSystem.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "patient",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    first_name = table.Column<string>(type: "text", nullable: false),
-                    last_name = table.Column<string>(type: "text", nullable: false),
-                    birth_date = table.Column<DateTime>(type: "date", nullable: true),
-                    gender = table.Column<string>(type: "text", nullable: false),
-                    phone = table.Column<string>(type: "text", nullable: true),
-                    email = table.Column<string>(type: "text", nullable: true),
-                    address = table.Column<string>(type: "text", nullable: true),
-                    marital_status = table.Column<string>(type: "text", nullable: true),
-                    emergency_contact_name = table.Column<string>(type: "text", nullable: true),
-                    emergency_contact_phone = table.Column<string>(type: "text", nullable: true),
-                    created_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_patient", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "user",
+                name: "users",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
@@ -73,7 +50,128 @@ namespace ClinicSystem.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user", x => x.id);
+                    table.PrimaryKey("PK_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "patient",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    first_name = table.Column<string>(type: "text", nullable: false),
+                    last_name = table.Column<string>(type: "text", nullable: false),
+                    doctor_id = table.Column<int>(type: "integer", nullable: false),
+                    birth_date = table.Column<DateTime>(type: "date", nullable: true),
+                    gender = table.Column<string>(type: "text", nullable: false),
+                    phone = table.Column<string>(type: "text", nullable: true),
+                    email = table.Column<string>(type: "text", nullable: true),
+                    address = table.Column<string>(type: "text", nullable: true),
+                    marital_status = table.Column<string>(type: "text", nullable: true),
+                    emergency_contact_name = table.Column<string>(type: "text", nullable: true),
+                    emergency_contact_phone = table.Column<string>(type: "text", nullable: true),
+                    created_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_patient", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_patient_doctor_doctor_id",
+                        column: x => x.doctor_id,
+                        principalTable: "doctor",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "notification",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<int>(type: "integer", nullable: false),
+                    message = table.Column<string>(type: "text", nullable: false),
+                    is_read = table.Column<bool>(type: "boolean", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    target_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_notification", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_notification_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "appointment",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    patient_id = table.Column<int>(type: "integer", nullable: false),
+                    doctor_id = table.Column<int>(type: "integer", nullable: false),
+                    appointment_date_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    status = table.Column<string>(type: "text", nullable: false),
+                    reason = table.Column<string>(type: "text", nullable: true),
+                    created_by = table.Column<int>(type: "integer", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_appointment", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_appointment_doctor_doctor_id",
+                        column: x => x.doctor_id,
+                        principalTable: "doctor",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_appointment_patient_patient_id",
+                        column: x => x.patient_id,
+                        principalTable: "patient",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_appointment_users_created_by",
+                        column: x => x.created_by,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "file_upload",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    patient_id = table.Column<int>(type: "integer", nullable: false),
+                    file_name = table.Column<string>(type: "text", nullable: false),
+                    file_type = table.Column<string>(type: "text", nullable: false),
+                    upload_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    uploaded_by = table.Column<int>(type: "integer", nullable: true),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    file_path = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_file_upload", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_file_upload_patient_patient_id",
+                        column: x => x.patient_id,
+                        principalTable: "patient",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_file_upload_users_uploaded_by",
+                        column: x => x.uploaded_by,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -135,16 +233,53 @@ namespace ClinicSystem.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "medical_record",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    patient_id = table.Column<int>(type: "integer", nullable: false),
+                    doctor_id = table.Column<int>(type: "integer", nullable: false),
+                    visit_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    diagnosis = table.Column<string>(type: "text", nullable: true),
+                    symptoms = table.Column<string>(type: "text", nullable: true),
+                    treatment = table.Column<string>(type: "text", nullable: true),
+                    allergies = table.Column<string>(type: "text", nullable: true),
+                    medications = table.Column<string>(type: "text", nullable: true),
+                    notes = table.Column<string>(type: "text", nullable: true),
+                    created_by = table.Column<int>(type: "integer", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_medical_record", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_medical_record_doctor_doctor_id",
+                        column: x => x.doctor_id,
+                        principalTable: "doctor",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_medical_record_patient_patient_id",
+                        column: x => x.patient_id,
+                        principalTable: "patient",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_medical_record_users_created_by",
+                        column: x => x.created_by,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "obstetric_history",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     patient_id = table.Column<int>(type: "integer", nullable: false),
-                    gravida = table.Column<int>(type: "integer", nullable: false),
-                    para = table.Column<int>(type: "integer", nullable: false),
-                    abortions = table.Column<int>(type: "integer", nullable: false),
-                    living_children = table.Column<int>(type: "integer", nullable: false),
                     ectopic_pregnancies = table.Column<int>(type: "integer", nullable: false),
                     stillbirths = table.Column<int>(type: "integer", nullable: false),
                     last_delivery_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -181,163 +316,6 @@ namespace ClinicSystem.API.Migrations
                         name: "FK_pregnancy_patient_patient_id",
                         column: x => x.patient_id,
                         principalTable: "patient",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "appointment",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    patient_id = table.Column<int>(type: "integer", nullable: false),
-                    doctor_id = table.Column<int>(type: "integer", nullable: false),
-                    appointment_date_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    status = table.Column<string>(type: "text", nullable: false),
-                    reason = table.Column<string>(type: "text", nullable: true),
-                    created_by = table.Column<int>(type: "integer", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_appointment", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_appointment_doctor_doctor_id",
-                        column: x => x.doctor_id,
-                        principalTable: "doctor",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_appointment_patient_patient_id",
-                        column: x => x.patient_id,
-                        principalTable: "patient",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_appointment_user_created_by",
-                        column: x => x.created_by,
-                        principalTable: "user",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "file_upload",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    patient_id = table.Column<int>(type: "integer", nullable: false),
-                    file_name = table.Column<string>(type: "text", nullable: false),
-                    file_type = table.Column<string>(type: "text", nullable: false),
-                    upload_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    uploaded_by = table.Column<int>(type: "integer", nullable: true),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    file_path = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_file_upload", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_file_upload_patient_patient_id",
-                        column: x => x.patient_id,
-                        principalTable: "patient",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_file_upload_user_uploaded_by",
-                        column: x => x.uploaded_by,
-                        principalTable: "user",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "medical_record",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    patient_id = table.Column<int>(type: "integer", nullable: false),
-                    doctor_id = table.Column<int>(type: "integer", nullable: false),
-                    visit_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    diagnosis = table.Column<string>(type: "text", nullable: true),
-                    symptoms = table.Column<string>(type: "text", nullable: true),
-                    treatment = table.Column<string>(type: "text", nullable: true),
-                    allergies = table.Column<string>(type: "text", nullable: true),
-                    medications = table.Column<string>(type: "text", nullable: true),
-                    notes = table.Column<string>(type: "text", nullable: true),
-                    created_by = table.Column<int>(type: "integer", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_medical_record", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_medical_record_doctor_doctor_id",
-                        column: x => x.doctor_id,
-                        principalTable: "doctor",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_medical_record_patient_patient_id",
-                        column: x => x.patient_id,
-                        principalTable: "patient",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_medical_record_user_created_by",
-                        column: x => x.created_by,
-                        principalTable: "user",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "notification",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    user_id = table.Column<int>(type: "integer", nullable: false),
-                    message = table.Column<string>(type: "text", nullable: false),
-                    is_read = table.Column<bool>(type: "boolean", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    target_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_notification", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_notification_user_user_id",
-                        column: x => x.user_id,
-                        principalTable: "user",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "antenatal_visit",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    pregnancy_id = table.Column<int>(type: "integer", nullable: false),
-                    visit_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    blood_presure = table.Column<string>(type: "text", nullable: true),
-                    weight = table.Column<decimal>(type: "numeric", nullable: true),
-                    fetal_heart_rate = table.Column<int>(type: "integer", nullable: true),
-                    urine_test_result = table.Column<string>(type: "text", nullable: true),
-                    doctor_notes = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_antenatal_visit", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_antenatal_visit_pregnancy_pregnancy_id",
-                        column: x => x.pregnancy_id,
-                        principalTable: "pregnancy",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -409,6 +387,31 @@ namespace ClinicSystem.API.Migrations
                         name: "FK_prescription_patient_patient_id",
                         column: x => x.patient_id,
                         principalTable: "patient",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "antenatal_visit",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    pregnancy_id = table.Column<int>(type: "integer", nullable: false),
+                    visit_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    blood_presure = table.Column<string>(type: "text", nullable: true),
+                    weight = table.Column<decimal>(type: "numeric", nullable: true),
+                    fetal_heart_rate = table.Column<int>(type: "integer", nullable: true),
+                    urine_test_result = table.Column<string>(type: "text", nullable: true),
+                    doctor_notes = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_antenatal_visit", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_antenatal_visit_pregnancy_pregnancy_id",
+                        column: x => x.pregnancy_id,
+                        principalTable: "pregnancy",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -494,6 +497,11 @@ namespace ClinicSystem.API.Migrations
                 column: "patient_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_patient_doctor_id",
+                table: "patient",
+                column: "doctor_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_pregnancy_patient_id",
                 table: "pregnancy",
                 column: "patient_id");
@@ -551,13 +559,13 @@ namespace ClinicSystem.API.Migrations
                 name: "appointment");
 
             migrationBuilder.DropTable(
-                name: "doctor");
-
-            migrationBuilder.DropTable(
                 name: "patient");
 
             migrationBuilder.DropTable(
-                name: "user");
+                name: "users");
+
+            migrationBuilder.DropTable(
+                name: "doctor");
         }
     }
 }

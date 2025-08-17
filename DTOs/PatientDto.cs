@@ -3,6 +3,7 @@ public class PatientDto
     public int Id { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
+    public int DoctorId { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public string Gender { get; set; } = null!;
     public string? Phone { get; set; }
@@ -18,6 +19,7 @@ public class CreatePatientDto
 {
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
+    public int DoctorId { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public string Gender { get; set; } = null!;
     public string? Phone { get; set; }
@@ -32,6 +34,7 @@ public class UpdatePatientDto
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
+    public int? DoctorId { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public string? Gender { get; set; }
     public string? Phone { get; set; }

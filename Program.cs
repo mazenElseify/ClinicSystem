@@ -7,6 +7,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT key is missingfrom configuration");
+
 
 // ✅ Register the DbContext before building the app
 builder.Services.AddDbContext<ClinicDbContext>(options =>
@@ -23,7 +25,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("KeepItSimpleStupid.25112025@KISS"))
+                Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 builder.Services.AddControllers();

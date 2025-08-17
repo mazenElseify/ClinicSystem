@@ -10,6 +10,7 @@ namespace ClinicSystem.API.Models
         public int Id { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
+        public int DoctorId { get; set; }
 
         [Column(TypeName = "date")]
         public DateTime? DateOfBirth { get; set; }
@@ -23,6 +24,7 @@ namespace ClinicSystem.API.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
+        public Doctor? Doctor { get; set; }
         public ICollection<Appointment>? Appointments { get; set; }
         public ICollection<MedicalRecord> PatientMedicalRecords { get; set; } = new List<MedicalRecord>();
 

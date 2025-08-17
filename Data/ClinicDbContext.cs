@@ -31,6 +31,7 @@ namespace ClinicSystem.API.Data
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.FirstName).HasColumnName("first_name");
                 entity.Property(e => e.LastName).HasColumnName("last_name");
+                entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
                 entity.Property(e => e.DateOfBirth).HasColumnName("birth_date");
                 entity.Property(e => e.Gender).HasColumnName("gender");
                 entity.Property(e => e.Phone).HasColumnName("phone");
@@ -40,6 +41,11 @@ namespace ClinicSystem.API.Data
                 entity.Property(e => e.EmergencyContactName).HasColumnName("emergency_contact_name");
                 entity.Property(e => e.EmergencyContactPhone).HasColumnName("emergency_contact_phone");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_date");
+
+                entity.HasOne(e => e.Doctor)
+                    .WithMany()
+                    .HasForeignKey(e => e.DoctorId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(e => e.Appointments)
                     .WithOne(e => e.Patient)

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config";
+import { useNavigate } from "react-router-dom";
 
 const initialPatient = {
   firstName: "",
@@ -27,35 +28,30 @@ function PatientsPage() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [genderFilter, setGenderFilter] = useState("");
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [detailsPatient, setDetailsPatient] = useState(null);
-  // later on .... to get full patient info and what's going on with her like (appointments, labTests, MedicalRecords, etc...)
-  // const [appointments, setAppointments] = useState([]);
-  // const [labTests, setLabTests] = useState([]);
-  // const [medicalRecords, setMedicalRecords] = useState([]);
-  // const [pregnancy, setPregnancy] = useState([]);
-  // const [gynecologicalHistory, setGynecologicalHistory] = useState([]);
-  // const [obstetricHistory, setObstetricHistory] = useState([]);
-  // const [prescriptions, setPrescriptions] = useState([]);
-  // const [antenatalVisits, setAntenatalVisits] = useState([]);
+  const [userRole, setUserRole] = useState("");
+  const [userId, setUserId] = useState(null);
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
-  // Filtered patients
-  const filteredPatients = patients.filter((patient) => {
-    const matchesSearch =
-      patient.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.lastName?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesGender =
-      genderFilter === "" || patient.gender === genderFilter;
-    return matchesSearch && matchesGender;
-  });
+  // Helper to decode JWT and get role/userId
+  useEffect(() => {
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setUserRole(payload.role);
+      setUserId(payload.id);
+    }
+  }, [token]);
 
   // Fetch patients
   const fetchPatients = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/patients`, {
+      let url = `${API_BASE_URL}/patients`;
+      if (userRole === "Doctor" && userId) {
+        url = `${API_BASE_URL}/patients/doctor/${userId}`;
+      }
+      const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPatients(res.data);
@@ -68,7 +64,7 @@ function PatientsPage() {
   useEffect(() => {
     fetchPatients();
     // eslint-disable-next-line
-  }, []);
+  }, [userRole, userId]);
 
   // Create patient
   const handleAddPatient = async (e) => {
@@ -128,12 +124,6 @@ function PatientsPage() {
     }
   };
 
-  // Show details modal
-  const handleShowDetails = (patient) => {
-    setDetailsPatient(patient);
-    setShowDetailsModal(true);
-  };
-
   // Helper to calculate age
   const getAge = (dateOfBirth) => {
     if (!dateOfBirth) return "";
@@ -142,6 +132,16 @@ function PatientsPage() {
         (365.25 * 24 * 60 * 60 * 1000)
     );
   };
+
+  // Filtered patients
+  const filteredPatients = patients.filter((patient) => {
+    const matchesSearch =
+      patient.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.lastName?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesGender =
+      genderFilter === "" || patient.gender === genderFilter;
+    return matchesSearch && matchesGender;
+  });
 
   return (
     <div className="p-6">
@@ -165,16 +165,18 @@ function PatientsPage() {
           <option value="Other">Other</option>
         </select>
       </div>
-      <button
-        className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
-        onClick={() => {
-          setModalType("add");
-          setCurrentPatient(initialPatient);
-          setShowModal(true);
-        }}
-      >
-        Add Patient
-      </button>
+      {userRole !== "Doctor" && (
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
+          onClick={() => {
+            setModalType("add");
+            setCurrentPatient(initialPatient);
+            setShowModal(true);
+          }}
+        >
+          Add Patient
+        </button>
+      )}
       {error && (
         <div className="bg-red-100 text-red-700 p-2 rounded mb-4">{error}</div>
       )}
@@ -213,14 +215,9 @@ function PatientsPage() {
                   <td className="p-2">{patient.phone}</td>
                   <td className="p-2 space-x-2">
                     <button
-                      onClick={() => handleShowDetails(patient)}
-                      className="bg-blue-600 text-white px-2 py-1 rounded"
-                    >
-                      View
-                    </button>
-                    <button
                       onClick={() => handleEditPatient(patient)}
                       className="bg-yellow-500 text-white px-2 py-1 rounded"
+                      disabled={userRole === "Doctor"}
                     >
                       Edit
                     </button>
@@ -230,8 +227,16 @@ function PatientsPage() {
                         setShowDeleteModal(true);
                       }}
                       className="bg-red-600 text-white px-2 py-1 rounded"
+                      disabled={userRole === "Doctor"}
                     >
                       Delete
+                    </button>
+                    <button
+                      className="bg-blue-500 text-white px-2 py-1 rounded"
+                      onClick={() => navigate(`/patients/${patient.id}`)}
+                      style={{ marginLeft: "4px" }}
+                    >
+                      View Details
                     </button>
                   </td>
                 </tr>
@@ -272,13 +277,12 @@ function PatientsPage() {
               required
             />
             <input
-              name="dateOfBirth"
               type="date"
+              name="dateOfBirth"
               value={currentPatient.dateOfBirth}
               onChange={(e) =>
                 setCurrentPatient({ ...currentPatient, dateOfBirth: e.target.value })
               }
-              placeholder="Date of Birth"
               className="w-full p-2 border rounded mb-2"
               required
             />
@@ -304,10 +308,10 @@ function PatientsPage() {
               }
               placeholder="Phone"
               className="w-full p-2 border rounded mb-2"
+              required
             />
             <input
               name="email"
-              type="email"
               value={currentPatient.email}
               onChange={(e) =>
                 setCurrentPatient({ ...currentPatient, email: e.target.value })
@@ -324,20 +328,15 @@ function PatientsPage() {
               placeholder="Address"
               className="w-full p-2 border rounded mb-2"
             />
-            <select
+            <input
               name="maritalStatus"
               value={currentPatient.maritalStatus}
               onChange={(e) =>
                 setCurrentPatient({ ...currentPatient, maritalStatus: e.target.value })
               }
+              placeholder="Marital Status"
               className="w-full p-2 border rounded mb-2"
-            >
-              <option value="">Select Marital Status</option>
-              <option value="Single">Single</option>
-              <option value="Married">Married</option>
-              <option value="Divorced">Divorced</option>
-              <option value="Widowed">Widowed</option>
-            </select>
+            />
             <input
               name="emergencyContactName"
               value={currentPatient.emergencyContactName}
@@ -376,165 +375,6 @@ function PatientsPage() {
               </button>
             </div>
           </form>
-        </div>
-      )}
-
-      {/* Details Modal */}
-      {showDetailsModal && detailsPatient && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4 text-blue-600">
-              Patient Details
-            </h2>
-            <div className="mb-2">
-              <strong>Name:</strong> {detailsPatient.firstName} {detailsPatient.lastName}
-            </div>
-            <div className="mb-2">
-              <strong>Age:</strong> {getAge(detailsPatient.dateOfBirth)}
-            </div>
-            <div className="mb-2">
-              <strong>Date of Birth:</strong> {detailsPatient.dateOfBirth?.slice(0,10)}
-            </div>
-            <div className="mb-2">
-              <strong>Gender:</strong> {detailsPatient.gender}
-            </div>
-            <div className="mb-2">
-              <strong>Phone:</strong> {detailsPatient.phone}
-            </div>
-            <div className="mb-2">
-              <strong>Email:</strong> {detailsPatient.email}
-            </div>
-            <div className="mb-2">
-              <strong>Address:</strong> {detailsPatient.address}
-            </div>
-            <div className="mb-2">
-              <strong>Marital Status:</strong> {detailsPatient.maritalStatus}
-            </div>
-            <div className="mb-2">
-              <strong>Emergency Contact Name:</strong> {detailsPatient.emergencyContactName}
-            </div>
-            <div className="mb-2">
-              <strong>Emergency Contact Phone:</strong> {detailsPatient.emergencyContactPhone}
-            </div>
-            {/* You can add medical records, appointments, etc. here */}
-            {/* Appointments
-            <div className="mb-4">
-              <h3 className="font-semibold text-lg mb-2">Appointments</h3>
-              {appointments.length ? (
-                <ul>
-                  {appointments.map((appt) => (
-                    <li key={appt.id}>
-                      {appt.date} - {appt.reason}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500">No appointments.</div>
-              )}
-            </div>
-             {/* Prescriptions */}
-            {/* <div className="mb-4">
-              <h3 className="font-semibold text-lg mb-2">Prescriptions</h3>
-              {prescriptions.length ? (
-                <ul>
-                  {prescriptions.map((presc) => (
-                    <li key={presc.id}>
-                      {presc.medication} - {presc.dosage}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500">No prescriptions.</div>
-              )}
-            </div> */}
-            {/* Medical Records */}
-            {/* <div className="mb-4">
-              <h3 className="font-semibold text-lg mb-2">Medical Records</h3>
-              {medicalRecords.length ? (
-                <ul>
-                  {medicalRecords.map((rec) => (
-                    <li key={rec.id}>
-                      {rec.recordType} - {rec.notes}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500">No medical records.</div>
-              )}
-            </div> */}
-            {/* Pregnancy */}
-            {/* <div className="mb-4">
-              <h3 className="font-semibold text-lg mb-2">Pregnancy</h3>
-              {pregnancy.length ? (
-                <ul>
-                  {pregnancy.map((preg) => (
-                    <li key={preg.id}>
-                      {preg.status} - {preg.notes}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500">No pregnancy records.</div>
-              )}
-            </div> */}
-            {/* Gynecological History */}
-            {/* <div className="mb-4">
-              <h3 className="font-semibold text-lg mb-2">Gynecological History</h3>
-              {gynecologicalHistory.length ? (
-                <ul>
-                  {gynecologicalHistory.map((gyne) => (
-                    <li key={gyne.id}>
-                      {gyne.detail}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500">No gynecological history.</div>
-              )}
-            </div> */}
-            {/* Obstetric History */}
-            {/* <div className="mb-4">
-              <h3 className="font-semibold text-lg mb-2">Obstetric History</h3>
-              {obstetricHistory.length ? (
-                <ul>
-                  {obstetricHistory.map((obs) => (
-                    <li key={obs.id}>
-                      {obs.detail}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500">No obstetric history.</div>
-              )}
-            </div> */}
-            {/* Antenatal Visits */}
-            {/* <div className="mb-4">
-              <h3 className="font-semibold text-lg mb-2">Antenatal Visits</h3>
-              {antenatalVisits.length ? (
-                <ul>
-                  {antenatalVisits.map((visit) => (
-                    <li key={visit.id}>
-                      {visit.date} - {visit.notes}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500">No antenatal visits.</div>
-              )}
-            </div> */} 
-            
-            
-            
-            <div className="flex justify-end mt-4">
-              <button
-                type="button"
-                onClick={() => setShowDetailsModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Close
-              </button>
-            </div>
-          </div>
         </div>
       )}
 

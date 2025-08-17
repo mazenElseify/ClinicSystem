@@ -19,6 +19,7 @@ import { isAuthenticated, logout } from './utils/auth';
 import RegisterPage from './pages/RegisterPage.jsx';
 import DoctorDashboardPage from './pages/DoctorDashboardPage.jsx';
 import axios from "axios";
+import PatientDetailsPage from "./pages/PatientDetailsPage";
 
 axios.interceptors.response.use(
   response => response,
@@ -151,6 +152,10 @@ function App() {
                 )
               }
             />
+            <Route 
+              path="/patients/:id" 
+              element=
+              {<PatientDetailsPage />} />
            
           </Routes>
         </main>

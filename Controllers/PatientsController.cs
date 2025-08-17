@@ -1,9 +1,10 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClinicSystem.API.Data;
 using ClinicSystem.API.Models;
+using ClinicSystem.API.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 
 namespace ClinicSystem.API.Controllers
 {
@@ -13,11 +14,12 @@ namespace ClinicSystem.API.Controllers
     public class PatientsController : ControllerBase
     {
         private readonly ClinicDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PatientsController(ClinicDbContext context)
+        public PatientsController(ClinicDbContext context, IMapper mapper)
         {
             _context = context;
-
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -36,30 +38,41 @@ namespace ClinicSystem.API.Controllers
             return Ok(patient);
         }
 
+        [HttpGet("doctor/{doctorId}")]
+        public async Task<ActionResult<IEnumerable<Patient>>> GetPatientsByDoctor(int doctorId)
+        {
+            var patients = await _context.Patients
+                .Where(p => p.DoctorId == doctorId)
+                .ToListAsync();
+            return Ok(patients);
+        }
 
         [HttpPost]
-        public async Task<ActionResult<Patient>> CreatePatient(Patient patient)
+        public async Task<ActionResult<Patient>> CreatePatient(PatientDto dto)
         {
-            if (patient.DateOfBirth == default)
+            if (dto.DateOfBirth == default)
                 return BadRequest("BirthDate is required");
-                
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var patient = _mapper.Map<Patient>(dto);
 
             _context.Patients.Add(patient);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetPatient), new { id = patient.Id }, patient);
-
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(int id, Patient patient)
+        public async Task<IActionResult> UpdatePatient(int id, PatientDto dto)
         {
-            if (id != patient.Id)
-                return BadRequest();
+            var patient = await _context.Patients.FindAsync(id);
+            if (patient == null)
+                return NotFound();
 
-            _context.Entry(patient).State = EntityState.Modified;
+            _mapper.Map(dto, patient);
+
             await _context.SaveChangesAsync();
             return NoContent();
         }
@@ -76,6 +89,5 @@ namespace ClinicSystem.API.Controllers
 
             return NoContent();
         }
-
     }
 }
