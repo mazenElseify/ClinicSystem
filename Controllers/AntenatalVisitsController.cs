@@ -32,7 +32,7 @@ namespace ClinicSystem.API.Controllers
                 .ToListAsync();
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<AntenatalVisit>>> GetById(int id)
+        public async Task<ActionResult<AntenatalVisit>> GetById(int id)
         {
             var visit = await _context.AntenatalVisits.FindAsync(id);
             if (visit == null) return NotFound();

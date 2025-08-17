@@ -40,7 +40,7 @@ namespace ClinicSystem.API.Controllers
             var invoice = _mapper.Map<Invoice>(dto);
             _context.Invoices.Add(invoice);
             await _context.SaveChangesAsync();
-            return Ok(invoice);
+            return CreatedAtAction(nameof(GetById), new { id = invoice.Id }, invoice);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, InvoiceDto dto)
@@ -58,6 +58,7 @@ namespace ClinicSystem.API.Controllers
             var invoice = await _context.Invoices.FindAsync(id);
             if (invoice == null) return NotFound();
             _context.Invoices.Remove(invoice);
+            await _context.SaveChangesAsync();
             return NoContent();
 
         }

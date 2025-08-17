@@ -20,14 +20,17 @@ namespace ClinicSystem.API.Controllers
     {
         private readonly ClinicDbContext _context;
         private readonly IMapper _mapper;
+        private readonly string _jwtKey;
 
-        public UsersController(ClinicDbContext context, IMapper mapper)
+        public UsersController(ClinicDbContext context, IMapper mapper, IConfiguration config)
         {
             _context = context;
             _mapper = mapper;
+            _jwtKey = config["Jwt:Key"] ?? throw new InvalidOperationException("JWT key is missing from configuration.");
+            // if (string.IsNullOrEmpty(_jwtKey)) 
+            //     throw new InvalidOperationException("JWT key is missing from configuration.");
 
         }
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
@@ -35,7 +38,6 @@ namespace ClinicSystem.API.Controllers
             return Ok(_mapper.Map<IEnumerable<UserDto>>(users));
 
         }
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUser(int id)
         {
@@ -46,7 +48,6 @@ namespace ClinicSystem.API.Controllers
             return Ok(_mapper.Map<UserDto>(user));
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto userDto)
         {
@@ -60,7 +61,6 @@ namespace ClinicSystem.API.Controllers
 
         }
 
-        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, UpdateUserDto updateDto)
         {
@@ -75,7 +75,6 @@ namespace ClinicSystem.API.Controllers
         }
 
 
-        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -119,9 +118,10 @@ namespace ClinicSystem.API.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim("id", user.Id.ToString()),
-                new Claim("role", user.Role)
+                new Claim("role", user.Role),
+                new Claim("email", user.Email ?? "")
             };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeepItSimpleStupid.25112025@KISS"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

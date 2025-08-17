@@ -31,7 +31,7 @@ namespace ClinicSystem.API.Controllers
                 .ToListAsync();
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Prescription>>> GetById(int id)
+        public async Task<ActionResult<Prescription>> GetById(int id)
         {
             var prescription = await _context.Prescriptions.FindAsync(id);
             if (prescription == null) return NotFound();

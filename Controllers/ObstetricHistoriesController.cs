@@ -52,6 +52,7 @@ namespace ClinicSystem.API.Controllers
         {
             var history = await _context.ObstetricHistories.FindAsync(id);
             if (history == null) return NotFound();
+            _mapper.Map(dto, history);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -64,6 +65,7 @@ namespace ClinicSystem.API.Controllers
             var history = await _context.ObstetricHistories.FindAsync(id);
             if (history == null) return NotFound();
             _context.ObstetricHistories.Remove(history);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 

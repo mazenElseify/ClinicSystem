@@ -20,13 +20,11 @@ namespace ClinicSystem.API.Controllers
             _context = context;
         }
 
-        [HttpGet]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetAllDoctors()
         {
             return await _context.Doctors.ToListAsync();
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Doctor>> GetDoctor(int id)
         {
@@ -38,7 +36,6 @@ namespace ClinicSystem.API.Controllers
             return Ok(doctor);
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Doctor>> CreateDoctor(Doctor doctor)
         {
@@ -48,7 +45,6 @@ namespace ClinicSystem.API.Controllers
             return CreatedAtAction(nameof(GetDoctor), new { id = doctor.Id }, doctor);
         }
 
-        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDoctor(int id, Doctor doctor)
         {
@@ -73,7 +69,6 @@ namespace ClinicSystem.API.Controllers
 
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor(int id)
         {
@@ -86,7 +81,6 @@ namespace ClinicSystem.API.Controllers
 
             return NoContent();
         }
-        [Authorize]
         [HttpGet("by-user/{userId}")]
         public async Task<ActionResult<DoctorDto>> GetDoctorByUserId(int userId)
         {
