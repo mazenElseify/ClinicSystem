@@ -31,6 +31,20 @@ namespace ClinicSystem.API.Controllers
             //     throw new InvalidOperationException("JWT key is missing from configuration.");
 
         }
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDto>> GetMe()
+        {
+            var userIdClaim = User.FindFirst("id");
+            if (userIdClaim == null)
+                return Unauthorized("User ID claim not found in token.");
+
+            var userId = int.Parse(userIdClaim.Value);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+            var userDto = _mapper.Map<UserDto>(user);
+            return Ok(userDto);
+        }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
