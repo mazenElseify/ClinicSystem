@@ -1,12 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../config";
+// import AuthContext if you use context for currentUser
+// import { AuthContext } from "../context/AuthContext";
 
 function PatientDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  // const { currentUser } = useContext(AuthContext); // If using context
+  const [currentUser, setCurrentUser] = useState(null); // If not, fetch from API or decode token
   const [patient, setPatient] = useState(null);
   const [sections, setSections] = useState({});
   const [expanded, setExpanded] = useState("");
@@ -14,6 +18,16 @@ function PatientDetailsPage() {
   const [showAddModal, setShowAddModal] = useState({ section: "", open: false });
   const [editItem, setEditItem] = useState(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    // Fetch current user info if not using context
+    axios
+      .get(`${API_BASE_URL}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setCurrentUser(res.data))
+      .catch(() => setError("Failed to fetch user info"));
+  }, [token]);
 
   useEffect(() => {
     axios
@@ -24,7 +38,6 @@ function PatientDetailsPage() {
       .catch(() => setError("Failed to fetch patient info"));
   }, [id, token]);
 
-  // Fetch section data only when expanded
   const fetchSection = async (section) => {
     setLoadingSection(section);
     let url = "";
@@ -62,14 +75,42 @@ function PatientDetailsPage() {
     setLoadingSection("");
   };
 
-  // Add/Edit handlers (template, expand for each section)
+  // Role-based access helpers
+  const canAddOrEditSection = (section) => {
+    if (!currentUser || !patient) return false;
+    if (currentUser.role === "Admin") return true;
+    if (currentUser.role === "Doctor") {
+      // Doctor can add/edit only for their own patients
+      if (patient.doctorId !== currentUser.id) return false;
+      // Doctor can add/edit all except invoices (only create)
+      return true;
+    }
+    if (currentUser.role === "Receptionist") {
+      // Receptionist can add/edit appointments only
+      return section === "appointments";
+    }
+    return false;
+  };
+
+  const canEditItem = (section) => {
+    if (!currentUser || !patient) return false;
+    if (currentUser.role === "Admin") return true;
+    if (currentUser.role === "Doctor") {
+      return patient.doctorId === currentUser.id;
+    }
+    if (currentUser.role === "Receptionist") {
+      return section === "appointments";
+    }
+    return false;
+  };
+
+  // Add/Edit handlers
   const handleAdd = (section) => setShowAddModal({ section, open: true });
   const handleEdit = (section, item) => {
     setEditItem(item);
     setShowAddModal({ section, open: true });
   };
 
-  // Example submit handler (expand for each section)
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Implement add/edit logic for each section here
@@ -129,12 +170,14 @@ function PatientDetailsPage() {
             <div className="mt-2 bg-white border rounded p-4">
               <div className="flex justify-between mb-2">
                 <span className="font-semibold">{section.label}</span>
-                <button
-                  className="bg-green-500 text-white px-2 py-1 rounded"
-                  onClick={() => handleAdd(section.key)}
-                >
-                  Add
-                </button>
+                {canAddOrEditSection(section.key) && (
+                  <button
+                    className="bg-green-500 text-white px-2 py-1 rounded"
+                    onClick={() => handleAdd(section.key)}
+                  >
+                    Add
+                  </button>
+                )}
               </div>
               {loadingSection === section.key ? (
                 <div>Loading...</div>
@@ -163,12 +206,15 @@ function PatientDetailsPage() {
                             </td>
                           ))}
                         <td className="p-2 border">
-                          <button
-                            className="bg-yellow-500 text-white px-2 py-1 rounded"
-                            onClick={() => handleEdit(section.key, item)}
-                          >
-                            Edit
-                          </button>
+                          {canEditItem(section.key) && (
+                            <button
+                              className="bg-yellow-500 text-white px-2 py-1 rounded"
+                              onClick={() => handleEdit(section.key, item)}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {/* No delete button for Receptionist or Doctor */}
                         </td>
                       </tr>
                     ))}

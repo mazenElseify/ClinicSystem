@@ -111,7 +111,10 @@ const UserManagementPage = () => {
     const token = localStorage.getItem("token");
     try {
       // 1. Create user
-      const userRes = await axios.post(`${API_BASE_URL}/users`, newUser
+      const userRes = await axios.post(
+        `${API_BASE_URL}/users`,
+        newUser,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       const createdUser = userRes.data;
       // 2. Create doctor

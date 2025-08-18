@@ -25,13 +25,17 @@ namespace ClinicSystem.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Patient>>> GetPatients()
         {
-            return await _context.Patients.ToListAsync();
+            return await _context.Patients
+                .Include(p => p.Doctor)
+                .ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Patient>> GetPatient(int id)
         {
-            var patient = await _context.Patients.FindAsync(id);
+            var patient = await _context.Patients
+            .Include(p => p.Doctor)
+            .FirstOrDefaultAsync(p => p.Id == id);
             if (patient == null)
                 return NotFound();
 
@@ -42,6 +46,7 @@ namespace ClinicSystem.API.Controllers
         public async Task<ActionResult<IEnumerable<Patient>>> GetPatientsByDoctor(int doctorId)
         {
             var patients = await _context.Patients
+                .Include(p => p.Doctor)
                 .Where(p => p.DoctorId == doctorId)
                 .ToListAsync();
             return Ok(patients);

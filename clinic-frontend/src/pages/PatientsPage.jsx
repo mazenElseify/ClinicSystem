@@ -14,10 +14,12 @@ const initialPatient = {
   maritalStatus: "",
   emergencyContactName: "",
   emergencyContactPhone: "",
+  doctorId: "", // for assignment
 };
 
 function PatientsPage() {
   const [patients, setPatients] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("add");
@@ -30,11 +32,12 @@ function PatientsPage() {
   const [genderFilter, setGenderFilter] = useState("");
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState(null);
+  const [doctorId, setDoctorId] = useState(null);
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  // Helper to decode JWT and get role/userId
+  // Decode JWT for role/userId
   useEffect(() => {
     if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -43,13 +46,47 @@ function PatientsPage() {
     }
   }, [token]);
 
+  // Fetch doctorId for logged-in doctor
+  useEffect(() => {
+    const fetchDoctorProfile = async () => {
+      if (userRole === "Doctor" && userId) {
+        try {
+          const res = await axios.get(`${API_BASE_URL}/doctors/by-user/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setDoctorId(res.data.id);
+        } catch {
+          setDoctorId(null);
+        }
+      }
+    };
+    fetchDoctorProfile();
+  }, [userRole, userId, token]);
+
+  // Fetch doctors for dropdown (admin/receptionist)
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      if (userRole === "Admin" || userRole === "Receptionist") {
+        try {
+          const res = await axios.get(`${API_BASE_URL}/doctors`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setDoctors(res.data);
+        } catch {
+          setDoctors([]);
+        }
+      }
+    };
+    fetchDoctors();
+  }, [userRole, token]);
+
   // Fetch patients
   const fetchPatients = async () => {
     setLoading(true);
     try {
       let url = `${API_BASE_URL}/patients`;
-      if (userRole === "Doctor" && userId) {
-        url = `${API_BASE_URL}/patients/doctor/${userId}`;
+      if (userRole === "Doctor" && doctorId) {
+        url = `${API_BASE_URL}/patients/doctor/${doctorId}`;
       }
       const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -64,13 +101,21 @@ function PatientsPage() {
   useEffect(() => {
     fetchPatients();
     // eslint-disable-next-line
-  }, [userRole, userId]);
+  }, [userRole, userId, doctorId]);
 
   // Create patient
   const handleAddPatient = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/patients`, currentPatient, {
+      let patientData = { ...currentPatient };
+      // Assign doctorId for doctor, admin, receptionist
+      if (userRole === "Doctor" && doctorId) {
+        patientData.doctorId = doctorId;
+      }
+      if ((userRole === "Admin" || userRole === "Receptionist") && patientData.doctorId === "") {
+        patientData.doctorId = null;
+      }
+      await axios.post(`${API_BASE_URL}/patients`, patientData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowModal(false);
@@ -91,6 +136,7 @@ function PatientsPage() {
       dateOfBirth: patient.dateOfBirth
         ? patient.dateOfBirth.slice(0, 10)
         : "",
+      doctorId: patient.doctorId || "",
     });
     setShowModal(true);
   };
@@ -165,7 +211,7 @@ function PatientsPage() {
           <option value="Other">Other</option>
         </select>
       </div>
-      {userRole !== "Doctor" && (
+      {(userRole === "Admin" || userRole === "Doctor" || userRole === "Receptionist") && (
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
           onClick={() => {
@@ -189,19 +235,22 @@ function PatientsPage() {
               <th className="p-2">Age</th>
               <th className="p-2">Gender</th>
               <th className="p-2">Phone</th>
+              {(userRole === "Admin" || userRole === "Receptionist") && (
+                <th className="p-2">Doctor</th>
+              )}
               <th className="p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="6" className="text-center p-4 text-gray-500">
+                <td colSpan={userRole === "Admin" || userRole === "Receptionist" ? 7 : 6} className="text-center p-4 text-gray-500">
                   Loading...
                 </td>
               </tr>
             ) : filteredPatients.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center p-4 text-gray-500">
+                <td colSpan={userRole === "Admin" || userRole === "Receptionist" ? 7 : 6} className="text-center p-4 text-gray-500">
                   No patients found.
                 </td>
               </tr>
@@ -213,6 +262,13 @@ function PatientsPage() {
                   <td className="p-2">{getAge(patient.dateOfBirth)}</td>
                   <td className="p-2">{patient.gender}</td>
                   <td className="p-2">{patient.phone}</td>
+                  {(userRole === "Admin" || userRole === "Receptionist") && (
+                    <td className="p-2">
+                      {patient.doctor
+                        ? `${patient.doctor.firstName} ${patient.doctor.lastName}`
+                        : <span className="text-red-600 font-semibold">Not assigned</span>}
+                    </td>
+                  )}
                   <td className="p-2 space-x-2">
                     <button
                       onClick={() => handleEditPatient(patient)}
@@ -227,7 +283,7 @@ function PatientsPage() {
                         setShowDeleteModal(true);
                       }}
                       className="bg-red-600 text-white px-2 py-1 rounded"
-                      disabled={userRole === "Doctor"}
+                      disabled={userRole !== "Admin"}
                     >
                       Delete
                     </button>
@@ -355,6 +411,22 @@ function PatientsPage() {
               placeholder="Emergency Contact Phone"
               className="w-full p-2 border rounded mb-2"
             />
+            {/* Doctor dropdown for Admin/Receptionist */}
+            {(userRole === "Admin" || userRole === "Receptionist") && (
+              <select
+                name="doctorId"
+                value={currentPatient.doctorId || ""}
+                onChange={e => setCurrentPatient({ ...currentPatient, doctorId: e.target.value })}
+                className="w-full p-2 border rounded mb-2"
+              >
+                <option value="">-- Select Doctor --</option>
+                {doctors.map(doc => (
+                  <option key={doc.id} value={doc.id}>
+                    {doc.firstName} {doc.lastName}
+                  </option>
+                ))}
+              </select>
+            )}
             <div className="flex justify-end space-x-4 mt-4">
               <button
                 type="button"
@@ -370,6 +442,7 @@ function PatientsPage() {
               <button
                 type="submit"
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                disabled={userRole === "Doctor" && modalType === "edit"}
               >
                 {modalType === "add" ? "Add" : "Save"}
               </button>
@@ -400,6 +473,7 @@ function PatientsPage() {
                 type="button"
                 onClick={handleDeletePatient}
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                disabled={userRole !== "Admin"}
               >
                 Delete
               </button>
