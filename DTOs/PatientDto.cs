@@ -4,6 +4,7 @@ public class PatientDto
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public int DoctorId { get; set; }
+    public string? DoctorName { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public string Gender { get; set; } = null!;
     public string? Phone { get; set; }

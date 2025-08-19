@@ -23,33 +23,39 @@ namespace ClinicSystem.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Patient>>> GetPatients()
+        public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatients()
         {
-            return await _context.Patients
+            var patients = await _context.Patients
                 .Include(p => p.Doctor)
                 .ToListAsync();
+            var dtos = _mapper.Map<List<PatientDto>>(patients);
+            return Ok(dtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Patient>> GetPatient(int id)
+        public async Task<ActionResult<PatientDto>> GetPatient(int id)
         {
             var patient = await _context.Patients
             .Include(p => p.Doctor)
             .FirstOrDefaultAsync(p => p.Id == id);
+
             if (patient == null)
                 return NotFound();
 
-            return Ok(patient);
+            var dto = _mapper.Map<PatientDto>(patient);
+            return Ok(dto);
         }
 
         [HttpGet("doctor/{doctorId}")]
-        public async Task<ActionResult<IEnumerable<Patient>>> GetPatientsByDoctor(int doctorId)
+        public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatientsByDoctor(int doctorId)
         {
             var patients = await _context.Patients
                 .Include(p => p.Doctor)
                 .Where(p => p.DoctorId == doctorId)
                 .ToListAsync();
-            return Ok(patients);
+
+            var dtos = _mapper.Map<List<PatientDto>>(patients);
+            return Ok(dtos);
         }
 
         [HttpPost]

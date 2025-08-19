@@ -325,6 +325,41 @@ function PatientDetailsPage() {
             <div className="text-gray-700 mb-1">
               <strong>Phone:</strong> {patient.phone}
             </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Email:</strong> {patient.email}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Date of Birth:</strong>{" "}
+              {patient.dateOfBirth ? patient.dateOfBirth.split("T")[0] : ""}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Age:</strong>{" "}
+              {patient.dateOfBirth
+                ? Math.floor(
+                    (new Date() - new Date(patient.dateOfBirth)) /
+                      (365.25 * 24 * 60 * 60 * 1000)
+                  )
+                : ""}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Address:</strong> {patient.address}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>National ID:</strong> {patient.nationalId}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Marital Status:</strong> {patient.maritalStatus}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Occupation:</strong> {patient.occupation}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Blood Type:</strong> {patient.bloodType}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Doctor:</strong> {patient.doctorName || ""}
+            </div>
+            {/* Add any other patient fields you have */}
           </div>
         )}
 

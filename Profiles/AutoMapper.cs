@@ -10,6 +10,9 @@ namespace ClinicSystem.API.Mapping
         {
             // Patient mappings
             CreateMap<PatientDto, Patient>().ReverseMap();
+            CreateMap<Patient, PatientDto>()
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor != null ?
+                    src.Doctor.FirstName + " " + src.Doctor.LastName : null));
             CreateMap<CreatePatientDto, Patient>();
             CreateMap<UpdatePatientDto, Patient>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
