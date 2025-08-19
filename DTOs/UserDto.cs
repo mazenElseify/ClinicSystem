@@ -8,6 +8,7 @@ namespace ClinicSystem.API.DTOs
         public string? Phone { get; set; }
         public string Role { get; set; } = "Receptionist";
         public bool IsActive { get; set; } = true;
+        public int? DoctorId { get; set; }
 
     }
     public class CreateUserDto

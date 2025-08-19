@@ -43,6 +43,13 @@ namespace ClinicSystem.API.Controllers
             var user = await _context.Users.FindAsync(userId);
             if (user == null) return NotFound();
             var userDto = _mapper.Map<UserDto>(user);
+
+            if (user.Role == "Doctor")
+            {
+                var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.UserId == user.Id);
+                if (doctor != null)
+                    userDto.DoctorId = doctor.Id;
+            }
             return Ok(userDto);
         }
         [HttpGet]

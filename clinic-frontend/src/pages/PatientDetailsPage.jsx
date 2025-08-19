@@ -1,16 +1,13 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../config";
-// import AuthContext if you use context for currentUser
-// import { AuthContext } from "../context/AuthContext";
 
 function PatientDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  // const { currentUser } = useContext(AuthContext); // If using context
-  const [currentUser, setCurrentUser] = useState(null); // If not, fetch from API or decode token
+  const [currentUser, setCurrentUser] = useState(null);
   const [patient, setPatient] = useState(null);
   const [sections, setSections] = useState({});
   const [expanded, setExpanded] = useState("");
@@ -18,9 +15,9 @@ function PatientDetailsPage() {
   const [showAddModal, setShowAddModal] = useState({ section: "", open: false });
   const [editItem, setEditItem] = useState(null);
   const [error, setError] = useState("");
+  const [formData, setFormData] = useState({});
 
   useEffect(() => {
-    // Fetch current user info if not using context
     axios
       .get(`${API_BASE_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -75,18 +72,14 @@ function PatientDetailsPage() {
     setLoadingSection("");
   };
 
-  // Role-based access helpers
   const canAddOrEditSection = (section) => {
     if (!currentUser || !patient) return false;
     if (currentUser.role === "Admin") return true;
     if (currentUser.role === "Doctor") {
-      // Doctor can add/edit only for their own patients
-      if (patient.doctorId !== currentUser.id) return false;
-      // Doctor can add/edit all except invoices (only create)
+      if (patient.doctorId !== currentUser.doctorId) return false;
       return true;
     }
     if (currentUser.role === "Receptionist") {
-      // Receptionist can add/edit appointments only
       return section === "appointments";
     }
     return false;
@@ -96,7 +89,7 @@ function PatientDetailsPage() {
     if (!currentUser || !patient) return false;
     if (currentUser.role === "Admin") return true;
     if (currentUser.role === "Doctor") {
-      return patient.doctorId === currentUser.id;
+      return patient.doctorId === currentUser.doctorId;
     }
     if (currentUser.role === "Receptionist") {
       return section === "appointments";
@@ -104,19 +97,200 @@ function PatientDetailsPage() {
     return false;
   };
 
-  // Add/Edit handlers
-  const handleAdd = (section) => setShowAddModal({ section, open: true });
-  const handleEdit = (section, item) => {
-    setEditItem(item);
+  const handleAdd = (section) => {
+    setEditItem(null);
+    setFormData({});
     setShowAddModal({ section, open: true });
   };
 
+  const handleEdit = (section, item) => {
+    setEditItem(item);
+    setFormData(item);
+    setShowAddModal({ section, open: true });
+  };
+
+  // Dynamic form fields for each section
+  const renderFormFields = () => {
+    switch (showAddModal.section) {
+      case "appointments":
+        return (
+          <>
+            <input
+              type="datetime-local"
+              name="date"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Date"
+              value={formData.date || ""}
+              onChange={e => setFormData({ ...formData, date: e.target.value })}
+            />
+            <input
+              type="text"
+              name="reason"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Reason"
+              value={formData.reason || ""}
+              onChange={e => setFormData({ ...formData, reason: e.target.value })}
+            />
+          </>
+        );
+      case "labTests":
+        return (
+          <>
+            <input
+              type="text"
+              name="testName"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Test Name"
+              value={formData.testName || ""}
+              onChange={e => setFormData({ ...formData, testName: e.target.value })}
+            />
+            <input
+              type="date"
+              name="testDate"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Test Date"
+              value={formData.testDate || ""}
+              onChange={e => setFormData({ ...formData, testDate: e.target.value })}
+            />
+          </>
+        );
+      case "gynecologicalHistory":
+        return (
+          <>
+            <input
+              type="text"
+              name="condition"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Condition"
+              value={formData.condition || ""}
+              onChange={e => setFormData({ ...formData, condition: e.target.value })}
+            />
+            <input
+              type="text"
+              name="notes"
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Notes"
+              value={formData.notes || ""}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
+            />
+          </>
+        );
+      case "obstetricHistory":
+        return (
+          <>
+            <input
+              type="text"
+              name="event"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Event"
+              value={formData.event || ""}
+              onChange={e => setFormData({ ...formData, event: e.target.value })}
+            />
+            <input
+              type="text"
+              name="notes"
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Notes"
+              value={formData.notes || ""}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
+            />
+          </>
+        );
+      case "prescriptions":
+        return (
+          <>
+            <input
+              type="text"
+              name="medication"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Medication"
+              value={formData.medication || ""}
+              onChange={e => setFormData({ ...formData, medication: e.target.value })}
+            />
+            <input
+              type="text"
+              name="dosage"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Dosage"
+              value={formData.dosage || ""}
+              onChange={e => setFormData({ ...formData, dosage: e.target.value })}
+            />
+          </>
+        );
+      case "antenatalVisits":
+        return (
+          <>
+            <input
+              type="date"
+              name="visitDate"
+              required
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Visit Date"
+              value={formData.visitDate || ""}
+              onChange={e => setFormData({ ...formData, visitDate: e.target.value })}
+            />
+            <input
+              type="text"
+              name="notes"
+              className="w-full p-2 border rounded mb-2"
+              placeholder="Notes"
+              value={formData.notes || ""}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
+            />
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Handle submit for add/edit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Implement add/edit logic for each section here
-    setShowAddModal({ section: "", open: false });
-    setEditItem(null);
-    fetchSection(showAddModal.section);
+    let url = "";
+    let method = editItem ? "put" : "post";
+    let data = { ...formData, patientId: id };
+    switch (showAddModal.section) {
+      case "appointments":
+        url = `${API_BASE_URL}/appointments${editItem ? "/" + editItem.id : ""}`;
+        break;
+      case "labTests":
+        url = `${API_BASE_URL}/labtests${editItem ? "/" + editItem.id : ""}`;
+        break;
+      case "gynecologicalHistory":
+        url = `${API_BASE_URL}/gynecologicalhistories${editItem ? "/" + editItem.id : ""}`;
+        break;
+      case "obstetricHistory":
+        url = `${API_BASE_URL}/obstetrichistories${editItem ? "/" + editItem.id : ""}`;
+        break;
+      case "prescriptions":
+        url = `${API_BASE_URL}/prescriptions${editItem ? "/" + editItem.id : ""}`;
+        break;
+      case "antenatalVisits":
+        url = `${API_BASE_URL}/antenatalvisits${editItem ? "/" + editItem.id : ""}`;
+        break;
+      default:
+        return;
+    }
+    try {
+      await axios[method](url, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setShowAddModal({ section: "", open: false });
+      setEditItem(null);
+      setFormData({});
+      fetchSection(showAddModal.section);
+    } catch {
+      setError("Failed to save data.");
+    }
   };
 
   const sectionList = [
@@ -129,137 +303,160 @@ function PatientDetailsPage() {
   ];
 
   return (
-    <div className="p-6">
-      <button
-        className="mb-4 px-4 py-2 bg-gray-300 rounded"
-        onClick={() => navigate(-1)}
-      >
-        Back
-      </button>
-      <h2 className="text-2xl font-bold mb-4">Patient Details</h2>
-      {error && (
-        <div className="bg-red-100 text-red-700 p-2 rounded mb-4">{error}</div>
-      )}
-      {patient && (
-        <div className="mb-4 p-4 bg-gray-100 rounded">
-          <div>
-            <strong>Name:</strong> {patient.firstName} {patient.lastName}
+    <div className="flex flex-col items-center min-h-screen bg-gray-50">
+      <div className="w-full max-w-6xl mt-8">
+        <button
+          className="mb-4 px-4 py-2 bg-gray-300 rounded"
+          onClick={() => navigate(-1)}
+        >
+          Back
+        </button>
+        {error && (
+          <div className="bg-red-100 text-red-700 p-2 rounded mb-4">{error}</div>
+        )}
+        {patient && (
+          <div className="mb-6 p-6 bg-white rounded shadow text-center">
+            <h2 className="text-3xl font-bold mb-2">
+              {patient.firstName} {patient.lastName}
+            </h2>
+            <div className="text-gray-700 mb-1">
+              <strong>Gender:</strong> {patient.gender}
+            </div>
+            <div className="text-gray-700 mb-1">
+              <strong>Phone:</strong> {patient.phone}
+            </div>
           </div>
-          <div>
-            <strong>Gender:</strong> {patient.gender}
-          </div>
-          <div>
-            <strong>Phone:</strong> {patient.phone}
-          </div>
-          {/* ...other info... */}
-        </div>
-      )}
+        )}
 
-      {sectionList.map((section) => (
-        <div key={section.key} className="mb-6">
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => {
-              setExpanded(expanded === section.key ? "" : section.key);
-              if (expanded !== section.key) fetchSection(section.key);
-            }}
-          >
-            {expanded === section.key ? "Hide" : "Show"} {section.label}
-          </button>
-          {expanded === section.key && (
-            <div className="mt-2 bg-white border rounded p-4">
-              <div className="flex justify-between mb-2">
-                <span className="font-semibold">{section.label}</span>
+        {sectionList.map((section) => (
+          <div key={section.key} className="mb-10 flex justify-center">
+            <div className="w-full max-w-6xl">
+              {/* Section Header - centered name */}
+              <div className="flex flex-col items-center bg-gray-100 rounded-t px-6 pt-6 pb-2 shadow">
+                <span className="font-bold text-xl text-gray-800 text-center">{section.label}</span>
+                <hr className="w-16 my-2 border-gray-300" />
+                <button
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-300"
+                  style={{ color: "#333", border: "none" }}
+                  onClick={() => {
+                    setExpanded(expanded === section.key ? "" : section.key);
+                    if (expanded !== section.key) fetchSection(section.key);
+                  }}
+                  aria-label={expanded === section.key ? "Collapse" : "Expand"}
+                >
+                  <span
+                    style={{
+                      fontSize: "2rem",
+                      transition: "transform 0.3s",
+                      transform: expanded === section.key ? "rotate(180deg)" : "rotate(0deg)",
+                    }}
+                  >
+                    ▼
+                  </span>
+                </button>
                 {canAddOrEditSection(section.key) && (
                   <button
-                    className="bg-green-500 text-white px-2 py-1 rounded"
+                    className="mt-4 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
                     onClick={() => handleAdd(section.key)}
                   >
                     Add
                   </button>
                 )}
               </div>
-              {loadingSection === section.key ? (
-                <div>Loading...</div>
-              ) : sections[section.key] && sections[section.key].length ? (
-                <table className="min-w-full border">
-                  <thead>
-                    <tr>
-                      {Object.keys(sections[section.key][0])
-                        .filter((k) => k !== "id")
-                        .map((k) => (
-                          <th key={k} className="p-2 border">
-                            {k}
-                          </th>
-                        ))}
-                      <th className="p-2 border">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sections[section.key].map((item) => (
-                      <tr key={item.id}>
-                        {Object.entries(item)
-                          .filter(([k]) => k !== "id")
-                          .map(([k, v]) => (
-                            <td key={k} className="p-2 border">
-                              {String(v)}
-                            </td>
-                          ))}
-                        <td className="p-2 border">
-                          {canEditItem(section.key) && (
-                            <button
-                              className="bg-yellow-500 text-white px-2 py-1 rounded"
-                              onClick={() => handleEdit(section.key, item)}
-                            >
-                              Edit
-                            </button>
-                          )}
-                          {/* No delete button for Receptionist or Doctor */}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="text-gray-500">No records found.</div>
-              )}
-            </div>
-          )}
-        </div>
-      ))}
-
-      {/* Add/Edit Modal (template, expand for each section) */}
-      {showAddModal.open && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md"
-          >
-            <h2 className="text-xl font-bold mb-4 text-blue-600">
-              {editItem ? "Edit" : "Add"} {showAddModal.section}
-            </h2>
-            {/* ...form fields for the section... */}
-            <div className="flex justify-end space-x-4 mt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddModal({ section: "", open: false });
-                  setEditItem(null);
+              {/* Section Table with animation */}
+              <div
+                style={{
+                  maxHeight: expanded === section.key ? "1000px" : "0px",
+                  overflow: "hidden",
+                  transition: "max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                {editItem ? "Save" : "Add"}
-              </button>
+                {expanded === section.key && (
+                  <div className="w-full bg-white border rounded-b p-6 shadow-lg animate-fade-in">
+                    {loadingSection === section.key ? (
+                      <div>Loading...</div>
+                    ) : sections[section.key] && sections[section.key].length ? (
+                      <table className="min-w-full border mx-auto">
+                        <thead>
+                          <tr>
+                            {Object.keys(sections[section.key][0])
+                              .filter((k) => k !== "id")
+                              .map((k) => (
+                                <th key={k} className="p-2 border font-normal text-gray-700">
+                                  {k}
+                                </th>
+                              ))}
+                            <th className="p-2 border font-normal text-gray-700">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sections[section.key].map((item) => (
+                            <tr key={item.id}>
+                              {Object.entries(item)
+                                .filter(([k]) => k !== "id")
+                                .map(([k, v]) => (
+                                  <td key={k} className="p-2 border text-gray-800">
+                                    {String(v)}
+                                  </td>
+                                ))}
+                              <td className="p-2 border">
+                                {canEditItem(section.key) && (
+                                  <button
+                                    className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500"
+                                    onClick={() => handleEdit(section.key, item)}
+                                  >
+                                    Edit
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-gray-500 text-center">No records found.</div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </form>
-        </div>
-      )}
+          </div>
+        ))}
+
+        {/* Add/Edit Modal */}
+        {showAddModal.open && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md"
+            >
+              <h2 className="text-xl font-bold mb-4 text-gray-700">
+                {editItem ? "Edit" : "Add"} {showAddModal.section}
+              </h2>
+              {renderFormFields()}
+              <div className="flex justify-end space-x-4 mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddModal({ section: "", open: false });
+                    setEditItem(null);
+                    setFormData({});
+                  }}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800"
+                >
+                  {editItem ? "Save" : "Add"}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
