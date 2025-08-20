@@ -317,8 +317,11 @@ function PatientDetailsPage() {
         {patient && (
           <div className="mb-6 p-6 bg-white rounded shadow text-center">
             <h2 className="text-3xl font-bold mb-2">
-              {patient.firstName} {patient.lastName}
+              {patient.firstName} {patient.lastName}            
             </h2>
+            <div className="text-ggray-700 mb-1">
+              <strong>Patient ID</strong> {patient.id}
+            </div>
             <div className="text-gray-700 mb-1">
               <strong>Gender:</strong> {patient.gender}
             </div>

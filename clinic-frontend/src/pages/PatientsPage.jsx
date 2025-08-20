@@ -33,6 +33,11 @@ function PatientsPage() {
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState(null);
   const [doctorId, setDoctorId] = useState(null);
+  
+  
+  
+
+
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -183,7 +188,8 @@ function PatientsPage() {
   const filteredPatients = patients.filter((patient) => {
     const matchesSearch =
       patient.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.lastName?.toLowerCase().includes(searchTerm.toLowerCase());
+      patient.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (patient.id && patient.id.toString().includes(searchTerm));
     const matchesGender =
       genderFilter === "" || patient.gender === genderFilter;
     return matchesSearch && matchesGender;
@@ -195,7 +201,7 @@ function PatientsPage() {
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <input
           type="text"
-          placeholder="Search by name"
+          placeholder="Search by name or Patient ID"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border p-2 rounded w-full md:w-1/3"
@@ -230,8 +236,9 @@ function PatientsPage() {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-left">
-              <th className="p-2">First Name</th>
-              <th className="p-2">Last Name</th>
+              <th className="p-2">ID</th>
+              <th className="p-2">Name</th>
+              
               <th className="p-2">Age</th>
               <th className="p-2">Gender</th>
               <th className="p-2">Phone</th>
@@ -257,8 +264,8 @@ function PatientsPage() {
             ) : (
               filteredPatients.map((patient) => (
                 <tr key={patient.id} className="border-t">
-                  <td className="p-2">{patient.firstName}</td>
-                  <td className="p-2">{patient.lastName}</td>
+                  <td className="p-2">{patient.id}</td>
+                  <td className="p-2">{patient.firstName} {patient.lastName}</td>
                   <td className="p-2">{getAge(patient.dateOfBirth)}</td>
                   <td className="p-2">{patient.gender}</td>
                   <td className="p-2">{patient.phone}</td>
