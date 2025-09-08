@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config";
+import Select from "react-select";
 
 const initialAppointment = {
   appointmentDateTime: "",
@@ -29,6 +30,16 @@ function AppointmentsPage({ user }) {
   const token = localStorage.getItem("token");
   const userRole = user?.role?.toLowerCase();
   const doctorId = user?.doctorId;
+  
+  const patientOptions = patients.map((pat) => ({
+    value: pat.id,
+    label: `${pat.firstName} ${pat.lastName} (ID: ${pat.id})`,
+  }));
+  
+  const doctorOptions = doctors.map((doc) => ({
+    value: doc.id,
+    label: `${doc.firstName} ${doc.lastName} (ID: ${doc.id})`,
+  }));
 
   // Helper functions for categorizing appointments
   const isToday = (date) => {
@@ -342,44 +353,32 @@ function AppointmentsPage({ user }) {
             </h2>
             {/* Doctor dropdown (admin/receptionist only) */}
             {(userRole === "admin" || userRole === "receptionist") && (
-              <select
-                name="doctorId"
-                value={currentAppointment.doctorId}
-                onChange={(e) =>
-                  setCurrentAppointment({ ...currentAppointment, doctorId: Number(e.target.value) })
-                }
-                className="w-full p-2 border rounded mb-2"
-                required
-              >
-                <option value="">Select Doctor</option>
-                {doctors.map((doc) => (
-                  <option key={doc.id} value={doc.id}>
-                    {doc.firstName} {doc.lastName}
-                  </option>
-                ))}
-              </select>
+             <Select
+              options= {doctorOptions}
+              value={doctorOptions.find(opt => opt.value === currentAppointment.doctorId) || null}
+              onChange={option => 
+                setCurrentAppointment({ ...currentAppointment, doctorId: option ? option.value : "" })
+              }
+              placeholder= "Search doctor by name or ID"
+              isClearable
+              className= "mb-2"
+            />      
             )}
             {/* Doctor field for doctor role (hidden) */}
             {userRole === "doctor" && (
               <input type="hidden" value={doctorId} name="doctorId" />
             )}
             {/* Patient dropdown */}
-            <select
-              name="patientId"
-              value={currentAppointment.patientId}
-              onChange={(e) =>
-                setCurrentAppointment({ ...currentAppointment, patientId: Number(e.target.value) })
+            <Select
+              options={patientOptions}
+              value={patientOptions.find(opt => opt.value === currentAppointment.patientId) || null}
+              onChange={option =>
+                setCurrentAppointment({ ...currentAppointment, patientId: option ? option.value : "" })
               }
-              className="w-full p-2 border rounded mb-2"
-              required
-            >
-              <option value="">Select Patient</option>
-              {patients.map((pat) => (
-                <option key={pat.id} value={pat.id}>
-                  {pat.firstName} {pat.lastName}
-                </option>
-              ))}
-            </select>
+              placeholder="Search patient by name or ID"
+              isClearable
+              className="mb-2"
+            />
             <input
               name="appointmentDateTime"
               type="datetime-local"

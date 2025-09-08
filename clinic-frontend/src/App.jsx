@@ -27,6 +27,7 @@ axios.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // Token expired or invalid
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       window.location.href = "/login"; // or your login route
     }
     return Promise.reject(error);
@@ -45,14 +46,25 @@ function App() {
   // Load user from localStorage on app start
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    if (isAuthenticated() && storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (e) {
         console.error('Invalid user in localStorage');
+        setUser(null);
         localStorage.removeItem('user');
       }
+    } else {
+      setUser(null);
+      localStorage.removeItem('user');
     }
+  }, []);
+  useEffect(() => {
+    const syncLogout = () => {
+      if (!isAuthenticated()) setUser(null);
+    };
+    window.addEventListener("storage", syncLogout);
+    return () => window.removeEventListener("storage", syncLogout);
   }, []);
 
   const handleLogout = () => {

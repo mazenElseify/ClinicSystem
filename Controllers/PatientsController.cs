@@ -23,13 +23,16 @@ namespace ClinicSystem.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatients()
+        public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatients(int page = 1, int pageSize = 20)
         {
+            var total = await _context.Patients.CountAsync();
             var patients = await _context.Patients
                 .Include(p => p.Doctor)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
             var dtos = _mapper.Map<List<PatientDto>>(patients);
-            return Ok(dtos);
+            return Ok(new { data = dtos, total });
         }
 
         [HttpGet("{id}")]
