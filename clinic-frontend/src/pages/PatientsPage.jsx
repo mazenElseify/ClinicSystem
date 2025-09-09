@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 
 const initialPatient = {
   firstName: "",
@@ -33,11 +34,11 @@ function PatientsPage() {
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState(null);
   const [doctorId, setDoctorId] = useState(null);
-  
-  
-  
 
-
+  // Assign doctor modal state
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assignPatientId, setAssignPatientId] = useState(null);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ function PatientsPage() {
       const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setPatients(res.data);
+      setPatients(Array.isArray(res.data) ? res.data : res.data.data || []);
     } catch (err) {
       setError("Failed to fetch patients");
     }
@@ -175,6 +176,25 @@ function PatientsPage() {
     }
   };
 
+  // Assign doctor to patient
+  const handleAssignDoctor = async (e) => {
+    e.preventDefault();
+    if (!selectedDoctor) return;
+    try {
+      await axios.put(
+        `${API_BASE_URL}/patients/${assignPatientId}`,
+        { doctorId: selectedDoctor.value },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setShowAssignModal(false);
+      setAssignPatientId(null);
+      setSelectedDoctor(null);
+      fetchPatients();
+    } catch {
+      setError("Failed to assign doctor");
+    }
+  };
+
   // Helper to calculate age
   const getAge = (dateOfBirth) => {
     if (!dateOfBirth) return "";
@@ -194,6 +214,12 @@ function PatientsPage() {
       genderFilter === "" || patient.gender === genderFilter;
     return matchesSearch && matchesGender;
   });
+
+  // Doctor options for react-select
+  const doctorOptions = doctors.map(doc => ({
+    value: doc.id,
+    label: `${doc.firstName} ${doc.lastName} (ID: ${doc.id})`
+  }));
 
   return (
     <div className="p-6">
@@ -238,7 +264,6 @@ function PatientsPage() {
             <tr className="bg-gray-200 text-left">
               <th className="p-2">ID</th>
               <th className="p-2">Name</th>
-              
               <th className="p-2">Age</th>
               <th className="p-2">Gender</th>
               <th className="p-2">Phone</th>
@@ -270,11 +295,26 @@ function PatientsPage() {
                   <td className="p-2">{patient.gender}</td>
                   <td className="p-2">{patient.phone}</td>
                   {(userRole === "Admin" || userRole === "Receptionist") && (
-                    <td className="p-2">
-                      {patient.doctor
-                        ? `${patient.doctor.firstName} ${patient.doctor.lastName}`
-                        : <span className="text-red-600 font-semibold">Not assigned</span>}
-                    </td>
+                   <td className="p-2">
+                    {patient.doctorId ? (
+                      <>
+                        {patient.doctor?.firstName && patient.doctor?.lastName
+                          ? `${patient.doctor.firstName} ${patient.doctor.lastName} `
+                          : ""}
+                        (ID: {patient.doctorId})
+                      </>
+                    ) : (
+                      <button
+                        className="bg-blue-500 text-white px-2 py-1 rounded"
+                        onClick={() => {
+                          setAssignPatientId(patient.id);
+                          setShowAssignModal(true);
+                        }}
+                      >
+                        Assign Doctor
+                      </button>
+                    )}
+                  </td>
                   )}
                   <td className="p-2 space-x-2">
                     <button
@@ -458,6 +498,46 @@ function PatientsPage() {
         </div>
       )}
 
+      {/* Assign Doctor Modal */}
+      {showAssignModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <form
+            onSubmit={handleAssignDoctor}
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md"
+          >
+            <h2 className="text-xl font-bold mb-4 text-blue-600">Assign Doctor</h2>
+            <Select
+              options={doctorOptions}
+              value={selectedDoctor}
+              onChange={setSelectedDoctor}
+              placeholder="Search doctor by name or ID"
+              isClearable
+              className="mb-4"
+            />
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAssignModal(false);
+                  setAssignPatientId(null);
+                  setSelectedDoctor(null);
+                }}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                disabled={!selectedDoctor}
+              >
+                Assign
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -491,5 +571,4 @@ function PatientsPage() {
     </div>
   );
 }
-
 export default PatientsPage;

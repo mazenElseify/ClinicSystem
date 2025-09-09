@@ -9,6 +9,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
+import Spinner from "./components/Spinner";
 import UserManagementPage from './pages/UsermanagementPage.jsx';
 import DoctorsPage from './pages/DoctorsPage.jsx';
 import AppointmentsPage from './pages/AppointmentsPage.jsx';
@@ -20,6 +21,7 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import DoctorDashboardPage from './pages/DoctorDashboardPage.jsx';
 import axios from "axios";
 import PatientDetailsPage from "./pages/PatientDetailsPage";
+
 
 axios.interceptors.response.use(
   response => response,
@@ -42,9 +44,11 @@ function PrivateRoute({ children }) {
 function App() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // Load user from localStorage on app start
   useEffect(() => {
+    setLoading(true);
     const storedUser = localStorage.getItem('user');
     if (isAuthenticated() && storedUser) {
       try {
@@ -58,7 +62,9 @@ function App() {
       setUser(null);
       localStorage.removeItem('user');
     }
+    setLoading(false);
   }, []);
+  if (loading) return <Spinner />;
   useEffect(() => {
     const syncLogout = () => {
       if (!isAuthenticated()) setUser(null);
