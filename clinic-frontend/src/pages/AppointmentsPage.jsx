@@ -82,7 +82,7 @@ function AppointmentsPage({ user }) {
             headers: { Authorization: `Bearer ${token}` }
           });
         }
-        setAppointments(apptRes.data);
+        setAppointments(Array.isArray(apptRes.data) ? apptRes.data : apptRes.data.data || [] );
 
         // Patients: doctors see only their patients, others see all
         let patientRes;
@@ -95,13 +95,13 @@ function AppointmentsPage({ user }) {
             headers: { Authorization: `Bearer ${token}` }
           });
         }
-        setPatients(patientRes.data);
+        setPatients(Array.isArray(patientRes.data) ? patientRes.data : patientRes.data.data || []);
 
         // Doctors: all roles see all doctors (for receptionist/admin)
         const doctorRes = await axios.get(`${API_BASE_URL}/doctors`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setDoctors(doctorRes.data);
+        setDoctors(Array.isArray(doctorRes.data) ? doctorRes.data : doctorRes.data.data || [] );
       } catch (err) {}
       setLoading(false);
     };
@@ -177,7 +177,7 @@ function AppointmentsPage({ user }) {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
-      setAppointments(apptRes.data);
+      setAppointments(Array.isArray(apptRes.data) ? apptRes.data : apptRes.data.data || []);
     } catch (err) {}
     setLoading(false);
   };
