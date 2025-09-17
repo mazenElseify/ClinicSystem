@@ -7,6 +7,7 @@ namespace ClinicSystem.API.DTOs
         public DateTime AppointmentDateTime { get; set; }
         public string Status { get; set; } = "Scheduled";
         public string? Reason { get; set; }
+        public string? Notes { get; set; }
         // public int? CreatedBy { get; set; }
     }
     public class UpdateAppointmentDto

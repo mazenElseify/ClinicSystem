@@ -30,7 +30,7 @@ function AppointmentsPage({ user }) {
   const token = localStorage.getItem("token");
   const userRole = user?.role?.toLowerCase();
   const doctorId = user?.doctorId;
-  
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const patientOptions = patients.map((pat) => ({
     value: pat.id,
     label: `${pat.firstName} ${pat.lastName} (ID: ${pat.id})`,
@@ -112,18 +112,25 @@ function AppointmentsPage({ user }) {
   
   const handleAddAppointment = async (e) => {
     e.preventDefault();
-    try {
-      let payload = {...currentAppointment};
+    
+      let payload = {...currentAppointment,
+        doctorId: currentAppointment.doctorId ? Number(currentAppointment.doctorId) : null,
+        patientId: currentAppointment.patientId ? Number(currentAppointment.patientId) : null
+      };
       if (userRole === "doctor") {
         payload.doctorId = doctorId;
       }
+      console.log("Submitting appointments: ", payload);
+      try{
       await axios.post(`${API_BASE_URL}/appointments`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setShowModal(false);
       setCurrentAppointment(initialAppointment);
       fetchAppointments();
-    } catch (err) {}
+    } catch (err) {
+      console.error(err?.response?.data || err);
+    }
   };
 
   // Edit appointment
@@ -141,7 +148,18 @@ function AppointmentsPage({ user }) {
   const handleUpdateAppointment = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`${API_BASE_URL}/appointments/${editId}`, currentAppointment, {
+      let payload = {
+        ...currentAppointment,
+        doctorId: currentAppointment.doctorId ? Number(currentAppointment.doctorId) : null,
+        patientId: currentAppointment.patientId ? Number(currentAppointment.patientId) : null,
+        status: currentAppointment.status,
+        reason: currentAppointment.reason,
+        notes: currentAppointment.notes || ""
+      };
+      if (userRole === "doctor") {
+        payload.doctorId = doctorId;
+      }
+      await axios.put(`${API_BASE_URL}/appointments/${editId}`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setShowModal(false);
@@ -249,7 +267,7 @@ function AppointmentsPage({ user }) {
                           className="text-blue-600 underline"
                           onClick={() => {
                             setSelectedPatient(patient);
-                            setSelectedReason(appt.reason);
+                            setSelectedAppointment(appt);
                             setShowPatientModal(true);
                           }}
                         >
@@ -378,6 +396,7 @@ function AppointmentsPage({ user }) {
               placeholder="Search patient by name or ID"
               isClearable
               className="mb-2"
+              isDisabled={modalType === "edit"}
             />
             <input
               name="appointmentDateTime"
@@ -399,17 +418,19 @@ function AppointmentsPage({ user }) {
               className="w-full p-2 border rounded mb-2"
               required
             />
-            <input
+            <textarea
               name="reason"
               value={currentAppointment.reason}
               onChange={(e) =>
                 setCurrentAppointment({ ...currentAppointment, reason: e.target.value })
+
               }
               placeholder="Reason"
               className="w-full p-2 border rounded mb-2"
+              rows={3}
             />
-            {modalType === "edit" && (
-              <input
+            
+              <textarea
                 name="notes"
                 value={currentAppointment.notes || ""}
                 onChange={(e) =>
@@ -417,8 +438,8 @@ function AppointmentsPage({ user }) {
                 }
                 placeholder="Notes"
                 className="w-full p-2 border rounded mb-2"
+                rows={3}
               />
-            )}
             <div className="flex justify-end space-x-4 mt-4">
               <button
                 type="button"
@@ -479,6 +500,9 @@ function AppointmentsPage({ user }) {
               Patient Info
             </h2>
             <div className="mb-2">
+              <strong>Patient ID:</strong> {selectedPatient.id}
+            </div>
+            <div className="mb-2">
               <strong>Name:</strong> {selectedPatient.firstName} {selectedPatient.lastName}
             </div>
             <div className="mb-2">
@@ -488,7 +512,10 @@ function AppointmentsPage({ user }) {
               <strong>Phone:</strong> {selectedPatient.phone}
             </div>
             <div className="mb-2">
-              <strong>Reason for Appointment:</strong> {selectedReason}
+              <strong>Reason for Appointment:</strong> {selectedAppointment?.reason || "No reason mentioned"}
+            </div>
+            <div className="mb-2">
+              <strong>Notes:</strong> {selectedAppointment?.notes || "No notes"}
             </div>
             <div className="flex justify-end mt-4">
               <button
