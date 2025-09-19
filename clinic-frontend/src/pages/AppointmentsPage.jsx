@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config";
+import TruncatedCell from "../components/TruncatedCell";
 import Select from "react-select";
 
 const initialAppointment = {
@@ -244,6 +245,8 @@ function AppointmentsPage({ user }) {
               <th className="p-2">Patient</th>
               <th className="p-2">Doctor</th>
               <th className="p-2">Status</th>
+              <th className="p-2">Reason</th>
+              <th className="p-2">Notes</th>
               <th className="p-2">Actions</th>
             </tr>
           </thead>
@@ -277,6 +280,12 @@ function AppointmentsPage({ user }) {
                     </td>
                     <td className="p-2">{doctor ? `${doctor.firstName} ${doctor.lastName}` : ""}</td>
                     <td className="p-2">{appt.status}</td>
+                    <td className="p-2">
+                      <TruncatedCell text={appt.reason} maxLength={30} label="Reason" />
+                    </td>
+                    <td className="p-2">
+                      <TruncatedCell text={appt.notes} maxLength={30} label="Notes" />
+                    </td>
                     <td className="p-2 space-x-2">
                       <button
                         onClick={() => handleEditAppointment(appt)}

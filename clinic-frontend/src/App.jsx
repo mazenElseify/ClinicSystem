@@ -139,7 +139,7 @@ function App() {
               element={
                 <PrivateRoute>
                   {user?.role?.toLowerCase() === "doctor"
-                    ? <DoctorDashboardPage user={user} />
+                    ? <DoctorDashboardPage doctorId={user?.doctorId} />
                     : <DoctorsPage user={user} />}
                 </PrivateRoute>
               }

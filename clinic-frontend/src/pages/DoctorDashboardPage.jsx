@@ -1,8 +1,11 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
-import API_BASE_URL from "../config";
 
-function DoctorDashboardPage({ user }) {
+import API_BASE_URL from "../config";
+import TruncatedCell from "../components/TruncatedCell";
+
+function DoctorDashboardPage({ doctorId }) {
   const [doctor, setDoctor] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [patientsMap, setPatientsMap] = useState({});
@@ -14,7 +17,6 @@ function DoctorDashboardPage({ user }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editDoctor, setEditDoctor] = useState(null);
 
-  const userId = user?.id;
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -22,36 +24,43 @@ function DoctorDashboardPage({ user }) {
       setLoading(true);
       setError("");
       try {
-        if (!userId) {
-          setError("User ID not found.");
+        if (!doctorId) {
+          setError("Doctor ID not found.");
           setLoading(false);
           return;
         }
-        // Fetch doctor profile by userId
-        const doctorRes = await axios.get(`${API_BASE_URL}/doctors/by-user/${userId}`, {
+        // Fetch doctor profile by doctorId
+        const doctorRes = await axios.get(`${API_BASE_URL}/doctors/${doctorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log('Doctor API response:', doctorRes);
         setDoctor(doctorRes.data);
 
-        // Fetch appointments by doctorId (from doctor profile)
-        const doctorId = doctorRes.data.id;
+        // Fetch appointments by doctorId
         const apptRes = await axios.get(`${API_BASE_URL}/appointments/doctor/${doctorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log('Appointments API response:', apptRes);
         setAppointments(apptRes.data);
 
         // Fetch all patients and build a map
         const patientsRes = await axios.get(`${API_BASE_URL}/patients`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log('Patients API response:', patientsRes);
         const map = {};
-        patientsRes.data.forEach(p => {
-          map[p.id] = `${p.firstName} ${p.lastName}`;
-        });
+        if (Array.isArray(patientsRes.data)) {
+          patientsRes.data.forEach(p => {
+            map[p.id] = `${p.firstName} ${p.lastName}`;
+          });
+        } else {
+          console.error('Expected array for patientsRes.data but got:', patientsRes.data);
+        }
         setPatientsMap(map);
 
       } catch (err) {
-        setError("Failed to load data.");
+        console.error('Error loading dashboard data:', err);
+        setError("Failed to load data. " + (err?.response?.data?.message || err.message || ''));
         setDoctor(null);
         setAppointments([]);
         setPatientsMap({});
@@ -59,7 +68,7 @@ function DoctorDashboardPage({ user }) {
       setLoading(false);
     };
     fetchData();
-  }, [userId, token]);
+  }, [doctorId, token]);
 
   // Edit doctor profile
   const handleEditProfile = () => {
@@ -225,7 +234,9 @@ function DoctorDashboardPage({ user }) {
                         </button>
                       </td>
                       <td className="p-2">{appt.status}</td>
-                      <td className="p-2">{appt.reason}</td>
+                      <td className="p-2">
+                        <TruncatedCell text={appt.reason} maxLength={30} label="Reason" />
+                      </td>
                     </tr>
                   ))
                 )}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config";
+import TruncatedCell from "../components/TruncatedCell";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 
@@ -267,6 +268,8 @@ function PatientsPage() {
               <th className="p-2">Age</th>
               <th className="p-2">Gender</th>
               <th className="p-2">Phone</th>
+              <th className="p-2">Email</th>
+              <th className="p-2">Address</th>
               {(userRole === "Admin" || userRole === "Receptionist") && (
                 <th className="p-2">Doctor</th>
               )}
@@ -294,6 +297,12 @@ function PatientsPage() {
                   <td className="p-2">{getAge(patient.dateOfBirth)}</td>
                   <td className="p-2">{patient.gender}</td>
                   <td className="p-2">{patient.phone}</td>
+                  <td className="p-2">
+                    <TruncatedCell text={patient.email} maxLength={25} label="Email" />
+                  </td>
+                  <td className="p-2">
+                    <TruncatedCell text={patient.address} maxLength={25} label="Address" />
+                  </td>
                   {(userRole === "Admin" || userRole === "Receptionist") && (
                    <td className="p-2">
                     {patient.doctorId ? (
