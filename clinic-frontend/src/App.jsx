@@ -52,7 +52,12 @@ function App() {
     const storedUser = localStorage.getItem('user');
     if (isAuthenticated() && storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        let parsed = JSON.parse(storedUser);
+        // If user is nested (user: { user: { ... }, token: ... }), flatten it for all pages except admin check
+        if (parsed && parsed.user && parsed.user.role) {
+          parsed = { ...parsed.user, token: parsed.token };
+        }
+        setUser(parsed);
       } catch (e) {
         console.error('Invalid user in localStorage');
         setUser(null);
@@ -101,7 +106,7 @@ function App() {
               <Link to="/patients" className="text-gray-600 hover:text-blue-600">
                 Patients
               </Link>
-              {user?.user?.role?.toLowerCase() === 'admin' && (
+              {user?.role?.toLowerCase() === 'admin' && (
                 <Link to="/users" className="text-gray-600 hover:text-blue-600">
                   Users
                 </Link>
@@ -163,13 +168,13 @@ function App() {
             <Route
               path="/users"
               element={
-                isAuthenticated() && user?.user?.role?.toLowerCase() === 'admin' ? (
-                  <UserManagementPage />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
-            />
+                  isAuthenticated() && user?.role?.toLowerCase() === 'admin' ? (
+                    <UserManagementPage />
+                  ) : (
+                    <Navigate to="/" />
+                  )
+                }
+              />
             <Route 
               path="/patients/:id" 
               element=

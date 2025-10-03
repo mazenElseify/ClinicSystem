@@ -19,7 +19,7 @@ const initialPatient = {
   doctorId: "", // for assignment
 };
 
-function PatientsPage() {
+function PatientsPage({ user }) {
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,8 +32,8 @@ function PatientsPage() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [genderFilter, setGenderFilter] = useState("");
-  const [userRole, setUserRole] = useState("");
-  const [userId, setUserId] = useState(null);
+  const userRole = user?.role ? user.role.toLowerCase() : "";
+  const userId = user?.id;
   const [doctorId, setDoctorId] = useState(null);
 
   // Assign doctor modal state
@@ -44,19 +44,11 @@ function PatientsPage() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  // Decode JWT for role/userId
-  useEffect(() => {
-    if (token) {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      setUserRole(payload.role);
-      setUserId(payload.id);
-    }
-  }, [token]);
 
   // Fetch doctorId for logged-in doctor
   useEffect(() => {
     const fetchDoctorProfile = async () => {
-      if (userRole === "Doctor" && userId) {
+      if (userRole === "doctor" && userId) {
         try {
           const res = await axios.get(`${API_BASE_URL}/doctors/by-user/${userId}`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -73,7 +65,7 @@ function PatientsPage() {
   // Fetch doctors for dropdown (admin/receptionist)
   useEffect(() => {
     const fetchDoctors = async () => {
-      if (userRole === "Admin" || userRole === "Receptionist") {
+      if (userRole === "admin" || userRole === "receptionist") {
         try {
           const res = await axios.get(`${API_BASE_URL}/doctors`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -92,7 +84,7 @@ function PatientsPage() {
     setLoading(true);
     try {
       let url = `${API_BASE_URL}/patients`;
-      if (userRole === "Doctor" && doctorId) {
+      if (userRole === "doctor" && doctorId) {
         url = `${API_BASE_URL}/patients/doctor/${doctorId}`;
       }
       const res = await axios.get(url, {
@@ -116,10 +108,10 @@ function PatientsPage() {
     try {
       let patientData = { ...currentPatient };
       // Assign doctorId for doctor, admin, receptionist
-      if (userRole === "Doctor" && doctorId) {
+      if (userRole === "doctor" && doctorId) {
         patientData.doctorId = doctorId;
       }
-      if ((userRole === "Admin" || userRole === "Receptionist") && patientData.doctorId === "") {
+      if ((userRole === "admin" || userRole === "receptionist") && patientData.doctorId === "") {
         patientData.doctorId = null;
       }
       await axios.post(`${API_BASE_URL}/patients`, patientData, {
@@ -244,7 +236,7 @@ function PatientsPage() {
           <option value="Other">Other</option>
         </select>
       </div>
-      {(userRole === "Admin" || userRole === "Doctor" || userRole === "Receptionist") && (
+      {(userRole === "admin" || userRole === "doctor" || userRole === "receptionist") && (
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
           onClick={() => {
@@ -270,7 +262,7 @@ function PatientsPage() {
               <th className="p-2">Phone</th>
               <th className="p-2">Email</th>
               <th className="p-2">Address</th>
-              {(userRole === "Admin" || userRole === "Receptionist") && (
+              {(userRole === "admin" || userRole === "receptionist") && (
                 <th className="p-2">Doctor</th>
               )}
               <th className="p-2">Actions</th>
@@ -279,13 +271,13 @@ function PatientsPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={userRole === "Admin" || userRole === "Receptionist" ? 7 : 6} className="text-center p-4 text-gray-500">
+                <td colSpan={userRole === "admin" || userRole === "receptionist" ? 7 : 6} className="text-center p-4 text-gray-500">
                   Loading...
                 </td>
               </tr>
             ) : filteredPatients.length === 0 ? (
               <tr>
-                <td colSpan={userRole === "Admin" || userRole === "Receptionist" ? 7 : 6} className="text-center p-4 text-gray-500">
+                <td colSpan={userRole === "admin" || userRole === "receptionist" ? 7 : 6} className="text-center p-4 text-gray-500">
                   No patients found.
                 </td>
               </tr>
@@ -303,7 +295,7 @@ function PatientsPage() {
                   <td className="p-2">
                     <TruncatedCell text={patient.address} maxLength={25} label="Address" />
                   </td>
-                  {(userRole === "Admin" || userRole === "Receptionist") && (
+                  {(userRole === "admin" || userRole === "receptionist") && (
                    <td className="p-2">
                     {patient.doctorId ? (
                       <>
@@ -468,7 +460,7 @@ function PatientsPage() {
               className="w-full p-2 border rounded mb-2"
             />
             {/* Doctor dropdown for Admin/Receptionist */}
-            {(userRole === "Admin" || userRole === "Receptionist") && (
+            {(userRole === "admin" || userRole === "receptionist") && (
               <select
                 name="doctorId"
                 value={currentPatient.doctorId || ""}
