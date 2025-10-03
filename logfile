@@ -1,0 +1,95 @@
+2025-09-24 20:00:59.210 EEST [87972] LOG:  starting PostgreSQL 14.19 (Homebrew) on x86_64-apple-darwin23.6.0, compiled by Apple clang version 16.0.0 (clang-1600.0.26.6), 64-bit
+2025-09-24 20:00:59.212 EEST [87972] LOG:  listening on IPv6 address "::1", port 5432
+2025-09-24 20:00:59.213 EEST [87972] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-24 20:00:59.214 EEST [87972] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2025-09-24 20:00:59.218 EEST [87973] LOG:  database system was shut down at 2025-09-24 20:00:25 EEST
+2025-09-24 20:00:59.223 EEST [87972] LOG:  database system is ready to accept connections
+2025-09-24 20:01:56.308 EEST [88440] FATAL:  role "postgres" does not exist
+2025-09-24 20:01:56.312 EEST [88441] FATAL:  role "postgres" does not exist
+2025-09-24 20:01:56.319 EEST [88442] FATAL:  role "postgres" does not exist
+2025-09-24 20:01:56.324 EEST [88443] FATAL:  role "postgres" does not exist
+2025-09-24 20:02:52.649 EEST [88785] FATAL:  role "postgres" does not exist
+2025-09-24 20:02:56.312 EEST [88839] FATAL:  role "postgres" does not exist
+2025-09-24 20:02:56.318 EEST [88840] FATAL:  role "postgres" does not exist
+2025-09-24 20:02:56.326 EEST [88841] FATAL:  role "postgres" does not exist
+2025-09-24 20:02:56.331 EEST [88842] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:39.344 EEST [88849] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:39.351 EEST [88850] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:39.360 EEST [88851] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:39.366 EEST [88852] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:40.927 EEST [88853] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:40.932 EEST [88854] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:42.043 EEST [88855] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:42.047 EEST [88856] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:42.709 EEST [88857] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:42.714 EEST [88858] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:42.916 EEST [88859] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:42.920 EEST [88860] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:42.926 EEST [88861] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:42.930 EEST [88862] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:47.776 EEST [88864] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:47.780 EEST [88865] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:48.694 EEST [88866] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:48.699 EEST [88867] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:52.784 EEST [88868] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:52.788 EEST [88869] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:53.997 EEST [88870] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:54.001 EEST [88871] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:54.156 EEST [88872] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:54.160 EEST [88873] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:54.165 EEST [88874] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:54.170 EEST [88875] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.036 EEST [88877] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.041 EEST [88878] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.698 EEST [88879] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.702 EEST [88880] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.706 EEST [88881] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.786 EEST [88882] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.790 EEST [88883] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.923 EEST [88884] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.927 EEST [88885] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.933 EEST [88886] FATAL:  role "postgres" does not exist
+2025-09-24 20:03:59.937 EEST [88887] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:04.832 EEST [88888] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:04.837 EEST [88889] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:09.825 EEST [88892] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:09.829 EEST [88893] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:10.650 EEST [88894] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:10.655 EEST [88895] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:10.784 EEST [88896] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:10.788 EEST [88897] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:10.793 EEST [88898] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:10.798 EEST [88899] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:12.047 EEST [88900] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:12.052 EEST [88901] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:16.305 EEST [88903] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:16.309 EEST [88904] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:21.311 EEST [88906] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:21.317 EEST [88907] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:26.304 EEST [88909] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:26.309 EEST [88910] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:31.312 EEST [88942] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:31.317 EEST [88943] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:36.302 EEST [88947] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:36.308 EEST [88948] FATAL:  role "postgres" does not exist
+2025-09-24 20:04:41.340 EEST [88955] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:04:42.303 EEST [88956] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:04:46.305 EEST [88958] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:04:50.212 EEST [88941] ERROR:  role "postgres" already exists
+2025-09-24 20:04:50.212 EEST [88941] STATEMENT:  CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD '2511';
+2025-09-24 20:04:51.311 EEST [88961] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:04:56.307 EEST [88965] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:05:01.312 EEST [88967] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:05:06.304 EEST [88969] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:05:11.312 EEST [88970] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:05:12.304 EEST [88971] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:05:56.306 EEST [88992] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:05:56.312 EEST [88993] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:06:56.307 EEST [89002] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:06:56.313 EEST [89003] FATAL:  database "gyn&obs_clinic" does not exist
+2025-09-24 20:07:39.565 EEST [87972] LOG:  received fast shutdown request
+2025-09-24 20:07:39.565 EEST [87972] LOG:  aborting any active transactions
+2025-09-24 20:07:39.565 EEST [88954] FATAL:  terminating connection due to administrator command
+2025-09-24 20:07:39.568 EEST [87972] LOG:  background worker "logical replication launcher" (PID 87979) exited with exit code 1
+2025-09-24 20:07:39.569 EEST [87974] LOG:  shutting down
+2025-09-24 20:07:39.578 EEST [87972] LOG:  database system is shut down

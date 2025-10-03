@@ -8,7 +8,7 @@ namespace ClinicSystem.API.DTOs
         public string Status { get; set; } = "Scheduled";
         public string? Reason { get; set; }
         public string? Notes { get; set; }
-        // public int? CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
     }
     public class UpdateAppointmentDto
     {
@@ -19,6 +19,7 @@ namespace ClinicSystem.API.DTOs
         public string Status { get; set; } = "Scheduled";
         public string? Reason { get; set; }
         public string? Notes { get; set; }
+        public int? CreatedBy { get; set; }
     }
     public class AppointmentDetailsDto
     {
@@ -30,6 +31,7 @@ namespace ClinicSystem.API.DTOs
         public string? Reason { get; set; }
         public string? Notes { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int? CreatedBy { get; set; }
     }
 
 }

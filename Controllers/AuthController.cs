@@ -47,7 +47,7 @@ namespace ClinicSystem.API.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim("id", user.Id.ToString()),
-                new Claim("role", user.Role),
+                new Claim(ClaimTypes.Role, user.Role),
                 new Claim("email", user.Email ?? "")
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));

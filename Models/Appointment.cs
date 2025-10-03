@@ -12,7 +12,8 @@ namespace ClinicSystem.API.Models
         // [Column(TypeName = "timestamp without time zone")]
         public DateTime AppointmentDateTime { get; set; }
         public string Status { get; set; } = "Scheduled";
-        public string? Reason { get; set; }
+    public string? Reason { get; set; }
+    public string? Notes { get; set; }
         public int? CreatedBy { get; set; }
 
         // [Column(TypeName = "timestamp without time zone")]

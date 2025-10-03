@@ -24,10 +24,13 @@ namespace ClinicSystem.API.Mapping
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             // Appointment Mapper
             CreateMap<AppointmentDto, Appointment>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy));
             CreateMap<UpdateAppointmentDto, Appointment>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
-            CreateMap<Appointment, AppointmentDto>();
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy));
+            CreateMap<Appointment, AppointmentDto>()
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy));
 
             // MedicalRecord Mapper
             CreateMap<MedicalRecordDto, MedicalRecord>();

@@ -101,7 +101,7 @@ function App() {
               <Link to="/patients" className="text-gray-600 hover:text-blue-600">
                 Patients
               </Link>
-              {user?.role === 'Admin' && (
+              {user?.user?.role?.toLowerCase() === 'admin' && (
                 <Link to="/users" className="text-gray-600 hover:text-blue-600">
                   Users
                 </Link>
@@ -163,7 +163,7 @@ function App() {
             <Route
               path="/users"
               element={
-                isAuthenticated() && user?.role === 'Admin' ? (
+                isAuthenticated() && user?.user?.role?.toLowerCase() === 'admin' ? (
                   <UserManagementPage />
                 ) : (
                   <Navigate to="/" />

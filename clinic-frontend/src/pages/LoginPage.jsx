@@ -14,7 +14,7 @@ function LoginPage({ setUser }) {
     setError("");
     try {
       // Fetch all users (you can later improve this by making a login endpoint)
-      const res = await fetch(`${API_BASE_URL}/users/login`, {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {"Content-type": "application/json"},
         body: JSON.stringify({ userName: username, password}),

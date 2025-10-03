@@ -52,6 +52,7 @@ const UserManagementPage = () => {
   const fetchUsers = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
+    console.log("Fetching users with token:", token);
     try {
       const response = await axios.get(`${API_BASE_URL}/users`,{
         headers:{
@@ -277,9 +278,9 @@ const UserManagementPage = () => {
           className="border p-2 rounded w-full md:w-1/3"
         >
           <option value="">All Roles</option>
-          <option value="Admin">Admin</option>
-          <option value="Receptionist">Receptionist</option>
-          <option value="Doctor">Doctor</option>
+          <option value="admin">Admin</option>
+          <option value="receptionist">Receptionist</option>
+          <option value="doctor">Doctor</option>
         </select>
       </div>
 
