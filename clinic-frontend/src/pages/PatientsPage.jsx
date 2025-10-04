@@ -262,7 +262,8 @@ function PatientsPage({ user }) {
               <th className="p-2">Phone</th>
               <th className="p-2">Email</th>
               <th className="p-2">Address</th>
-              {(userRole === "admin" || userRole === "receptionist") && (
+              {/* Only show Doctor column for admin and receptionist */}
+              {(["admin", "receptionist"].includes(userRole)) && (
                 <th className="p-2">Doctor</th>
               )}
               <th className="p-2">Actions</th>
@@ -271,13 +272,13 @@ function PatientsPage({ user }) {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={userRole === "admin" || userRole === "receptionist" ? 7 : 6} className="text-center p-4 text-gray-500">
+                <td colSpan={(["admin", "receptionist"].includes(userRole)) ? 8 : 7} className="text-center p-4 text-gray-500">
                   Loading...
                 </td>
               </tr>
             ) : filteredPatients.length === 0 ? (
               <tr>
-                <td colSpan={userRole === "admin" || userRole === "receptionist" ? 7 : 6} className="text-center p-4 text-gray-500">
+                <td colSpan={(["admin", "receptionist"].includes(userRole)) ? 8 : 7} className="text-center p-4 text-gray-500">
                   No patients found.
                 </td>
               </tr>
@@ -295,27 +296,28 @@ function PatientsPage({ user }) {
                   <td className="p-2">
                     <TruncatedCell text={patient.address} maxLength={25} label="Address" />
                   </td>
-                  {(userRole === "admin" || userRole === "receptionist") && (
-                   <td className="p-2">
-                    {patient.doctorId ? (
-                      <>
-                        {patient.doctor?.firstName && patient.doctor?.lastName
-                          ? `${patient.doctor.firstName} ${patient.doctor.lastName} `
-                          : ""}
-                        (ID: {patient.doctorId})
-                      </>
-                    ) : (
-                      <button
-                        className="bg-blue-500 text-white px-2 py-1 rounded"
-                        onClick={() => {
-                          setAssignPatientId(patient.id);
-                          setShowAssignModal(true);
-                        }}
-                      >
-                        Assign Doctor
-                      </button>
-                    )}
-                  </td>
+                  {/* Only show Doctor cell for admin and receptionist */}
+                  {(["admin", "receptionist"].includes(userRole)) && (
+                    <td className="p-2">
+                      {patient.doctorId ? (
+                        <>
+                          {patient.doctor?.firstName && patient.doctor?.lastName
+                            ? `${patient.doctor.firstName} ${patient.doctor.lastName} `
+                            : ""}
+                          (ID: {patient.doctorId})
+                        </>
+                      ) : (
+                        <button
+                          className="bg-blue-500 text-white px-2 py-1 rounded"
+                          onClick={() => {
+                            setAssignPatientId(patient.id);
+                            setShowAssignModal(true);
+                          }}
+                        >
+                          Assign Doctor
+                        </button>
+                      )}
+                    </td>
                   )}
                   <td className="p-2 space-x-2">
                     <button

@@ -13,33 +13,32 @@ function LoginPage({ setUser }) {
     e.preventDefault();
     setError("");
     try {
-      // Fetch all users (you can later improve this by making a login endpoint)
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {"Content-type": "application/json"},
         body: JSON.stringify({ userName: username, password}),
-      }); // adjust if needed
+      });
       if (!res.ok) {
         const errData = await res.json();
         setError(errData.message || "Login failed.");
         return;
       }
-      const user = await res.json();
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("token", user.token);
-      setUser(user);
-      navigate("/home");
-      
-      if (user.role === "Doctor") {
-        // Fetch doctor profile and set doctorId in user object
+      let user = await res.json();
+      // Always flatten user object if nested
+      if (user && user.user) {
+        user = { ...user.user, token: user.token };
+      }
+      // If doctor, fetch doctorId
+      if (user.role && user.role.toLowerCase() === "doctor") {
         const doctorRes = await axios.get(`${API_BASE_URL}/doctors/by-user/${user.id}`, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
         user.doctorId = doctorRes.data.id;
-        localStorage.setItem("user", JSON.stringify(user));
-        setUser(user); // update state
       }
-
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", user.token);
+      setUser(user);
+      navigate("/home");
     } catch (err) {
       console.error(err);
       setError("Login failed. Please try again.");

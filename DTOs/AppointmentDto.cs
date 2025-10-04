@@ -32,6 +32,8 @@ namespace ClinicSystem.API.DTOs
         public string? Notes { get; set; }
         public DateTime CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
+        public string? PatientName { get; set; }
+        public string? DoctorName { get; set; }
     }
 
 }

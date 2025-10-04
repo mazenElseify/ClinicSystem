@@ -23,9 +23,28 @@ namespace ClinicSystem.API.Controllers
 
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAllAppointments()
+        public async Task<ActionResult<IEnumerable<AppointmentDetailsDto>>> GetAllAppointments()
         {
-            return await _context.Appointments.ToListAsync();
+            var appointments = await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .ToListAsync();
+            var appointmentDtos = appointments.Select(a => new AppointmentDetailsDto
+            {
+                Id = a.Id,
+                PatientId = a.PatientId,
+                DoctorId = a.DoctorId,
+                AppointmentDateTime = a.AppointmentDateTime,
+                Status = a.Status,
+                Reason = a.Reason,
+                Notes = a.Notes,
+                CreatedAt = a.CreatedAt ?? DateTime.MinValue,
+                CreatedBy = a.CreatedBy,
+                // Add patient and doctor names for frontend display
+                PatientName = a.Patient != null ? a.Patient.FirstName + " " + a.Patient.LastName : null,
+                DoctorName = a.Doctor != null ? a.Doctor.FirstName + " " + a.Doctor.LastName : null
+            }).ToList();
+            return appointmentDtos;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Appointment>> GetAppointment(int id)
@@ -40,7 +59,17 @@ namespace ClinicSystem.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Appointment>> CreateAppointment(AppointmentDto appointmentDto)
         {
-            var appointment = _mapper.Map<Appointment>(appointmentDto);
+            // Manual mapping to ensure DoctorId and PatientId are set correctly
+            var appointment = new Appointment
+            {
+                DoctorId = appointmentDto.DoctorId,
+                PatientId = appointmentDto.PatientId,
+                AppointmentDateTime = appointmentDto.AppointmentDateTime,
+                Reason = appointmentDto.Reason,
+                Status = appointmentDto.Status,
+                CreatedBy = appointmentDto.CreatedBy,
+                CreatedAt = DateTime.UtcNow
+            };
             _context.Appointments.Add(appointment);
             appointment.AppointmentDateTime = appointment.AppointmentDateTime.ToUniversalTime();
             await _context.SaveChangesAsync();

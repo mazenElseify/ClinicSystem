@@ -53,8 +53,8 @@ function App() {
     if (isAuthenticated() && storedUser) {
       try {
         let parsed = JSON.parse(storedUser);
-        // If user is nested (user: { user: { ... }, token: ... }), flatten it for all pages except admin check
-        if (parsed && parsed.user && parsed.user.role) {
+        // Always flatten to get the actual user object and role
+        if (parsed && parsed.user) {
           parsed = { ...parsed.user, token: parsed.token };
         }
         setUser(parsed);
@@ -87,6 +87,13 @@ function App() {
 
   return (
       <div className="min-h-screen flex flex-col">
+        {/*
+        <div style={{ position: 'fixed', bottom: 0, right: 0, background: '#fffbe6', color: '#333', zIndex: 9999, border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, fontSize: 12, maxWidth: 400 }}>
+          <strong>Debug Panel</strong><br />
+          <div><b>Role:</b> {user?.role?.toString() || 'N/A'}</div>
+          <div><b>User:</b> <pre style={{whiteSpace:'pre-wrap',wordBreak:'break-all',margin:0}}>{JSON.stringify(user, null, 2)}</pre></div>
+        </div>
+        */}
         {/* Header */}
         {isAuthenticated() && (
           <header className="bg-white shadow p-4 flex justify-between items-center">
@@ -95,11 +102,15 @@ function App() {
               <Link to="/home" className="text-gray-600 hover:text-blue-600">
                 Home
               </Link>
-              <Link to="/doctors"
-               className="text-gray-600 hover:text-blue-600"
-              >
-                {user?.role?.toLowerCase() === "doctor" ? "Dashboard" : "Doctors"}
-              </Link>
+              {user?.role?.toLowerCase() === "doctor" ? (
+                <Link to="/doctors" className="text-gray-600 hover:text-blue-600">
+                  Dashboard
+                </Link>
+              ) : (
+                <Link to="/doctors" className="text-gray-600 hover:text-blue-600">
+                  Doctors
+                </Link>
+              )}
               <Link to="/appointments" className="text-gray-600 hover:text-blue-600">
                 Appointments
               </Link>

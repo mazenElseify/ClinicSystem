@@ -1,3 +1,4 @@
+  // ...existing code...
 import { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config";
@@ -30,7 +31,8 @@ function AppointmentsPage({ user }) {
   const [searchTerm, setSearchTerm] = useState("");
   const token = localStorage.getItem("token");
   const userRole = user?.role?.toLowerCase();
-  const doctorId = user?.doctorId;
+  // For doctor users, doctorId must come from user.doctorId (not user.id)
+  const doctorId = userRole === "doctor" ? user?.doctorId : undefined;
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const patientOptions = patients.map((pat) => ({
     value: pat.id,
@@ -113,21 +115,41 @@ function AppointmentsPage({ user }) {
   
   const handleAddAppointment = async (e) => {
     e.preventDefault();
-    
-      let payload = {...currentAppointment,
-        doctorId: currentAppointment.doctorId ? Number(currentAppointment.doctorId) : null,
-        patientId: currentAppointment.patientId ? Number(currentAppointment.patientId) : null
-      };
-      if (userRole === "doctor") {
-        payload.doctorId = doctorId;
+    let payload = { ...currentAppointment };
+    // Doctor: always set doctorId from user.doctorId (never user.id)
+    if (userRole === "doctor") {
+      if (!doctorId) {
+        alert("Doctor profile not found. Please contact admin.");
+        return;
       }
-      console.log("Submitting appointments: ", payload);
-      try{
-      await axios.post(`${API_BASE_URL}/appointments`, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      payload.doctorId = Number(doctorId);
+    } else {
+      // Admin/Receptionist: must select doctor
+      if (!payload.doctorId) {
+        alert("Please select a doctor for this appointment.");
+        return;
+      }
+      payload.doctorId = Number(payload.doctorId);
+    }
+    // Patient must be selected
+    if (!payload.patientId) {
+      alert("Please select a patient for this appointment.");
+      return;
+    }
+    payload.patientId = Number(payload.patientId);
+    // Send payload directly (not wrapped)
+    console.log("Submitting appointments: ", payload);
+    try {
+      await axios.post(
+        `${API_BASE_URL}/appointments`,
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setShowModal(false);
       setCurrentAppointment(initialAppointment);
+      // Refetch patients and doctors to ensure names are up to date
+      await fetchPatients();
+      await fetchDoctors();
       fetchAppointments();
     } catch (err) {
       console.error(err?.response?.data || err);
@@ -149,20 +171,23 @@ function AppointmentsPage({ user }) {
   const handleUpdateAppointment = async (e) => {
     e.preventDefault();
     try {
-      let payload = {
-        ...currentAppointment,
-        doctorId: currentAppointment.doctorId ? Number(currentAppointment.doctorId) : null,
-        patientId: currentAppointment.patientId ? Number(currentAppointment.patientId) : null,
-        status: currentAppointment.status,
-        reason: currentAppointment.reason,
-        notes: currentAppointment.notes || ""
-      };
+      let payload = { ...currentAppointment };
       if (userRole === "doctor") {
         payload.doctorId = doctorId;
+      } else {
+        payload.doctorId = payload.doctorId ? Number(payload.doctorId) : undefined;
       }
-      await axios.put(`${API_BASE_URL}/appointments/${editId}`, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      payload.patientId = payload.patientId ? Number(payload.patientId) : undefined;
+      if (!payload.doctorId) delete payload.doctorId;
+      if (!payload.patientId) delete payload.patientId;
+      payload.status = currentAppointment.status;
+      payload.reason = currentAppointment.reason;
+      payload.notes = currentAppointment.notes || "";
+      await axios.put(
+        `${API_BASE_URL}/appointments/${editId}`,
+        { appointmentDto: payload },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setShowModal(false);
       setCurrentAppointment(initialAppointment);
       setEditId(null);
@@ -201,6 +226,33 @@ function AppointmentsPage({ user }) {
     setLoading(false);
   };
 
+  // Refetch patients
+  const fetchPatients = async () => {
+    try {
+      let patientRes;
+      if (userRole === "doctor" && doctorId) {
+        patientRes = await axios.get(`${API_BASE_URL}/patients/doctor/${doctorId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } else {
+        patientRes = await axios.get(`${API_BASE_URL}/patients`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+      setPatients(Array.isArray(patientRes.data) ? patientRes.data : patientRes.data.data || []);
+    } catch (err) {}
+  };
+
+  // Refetch doctors
+  const fetchDoctors = async () => {
+    try {
+      const doctorRes = await axios.get(`${API_BASE_URL}/doctors`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setDoctors(Array.isArray(doctorRes.data) ? doctorRes.data : doctorRes.data.data || []);
+    } catch (err) {}
+  };
+
   // Search/filter appointments by patient/doctor name
   const filteredAppointments = appointments.filter((appt) => {
     const patient = patients.find(p => p.id === appt.patientId);
@@ -214,24 +266,23 @@ function AppointmentsPage({ user }) {
   });
 
   // Categorize appointments
-  const expiredAppointments = filteredAppointments.filter(
-    (appt) => isExpired(appt.appointmentDateTime)
-  );
   const todayAppointments = filteredAppointments.filter(
     (appt) => isToday(appt.appointmentDateTime)
   );
   const tomorrowAppointments = filteredAppointments.filter(
     (appt) => isTomorrow(appt.appointmentDateTime)
   );
+  const expiredAppointments = filteredAppointments.filter(
+    (appt) => isExpired(appt.appointmentDateTime)
+  );
   const ongoingAppointments = filteredAppointments.filter(
     (appt) => isOngoing(appt.appointmentDateTime, appt.status)
   );
-  const otherAppointments = filteredAppointments.filter(
+  const futureAppointments = filteredAppointments.filter(
     (appt) =>
-      !isExpired(appt.appointmentDateTime) &&
       !isToday(appt.appointmentDateTime) &&
       !isTomorrow(appt.appointmentDateTime) &&
-      !isOngoing(appt.appointmentDateTime, appt.status)
+      !isExpired(appt.appointmentDateTime)
   );
 
   // Table render helper
@@ -259,26 +310,36 @@ function AppointmentsPage({ user }) {
               </tr>
             ) : (
               appointments.map((appt) => {
-                const patient = patients.find(p => p.id === appt.patientId);
-                const doctor = doctors.find(d => d.id === appt.doctorId);
+                // Prefer backend-provided names, fallback to lookup if needed
+                const patientName = appt.patientName || (() => {
+                  const patient = patients.find(p => p.id === appt.patientId);
+                  return patient ? `${patient.firstName} ${patient.lastName}` : "";
+                })();
+                let doctorName = "";
+                if (appt.doctorName) {
+                  // If backend provides doctorName, append ID if available
+                  doctorName = `${appt.doctorName} (ID: ${appt.doctorId || ''})`;
+                } else {
+                  const doctor = doctors.find(d => d.id === appt.doctorId);
+                  doctorName = doctor ? `${doctor.firstName} ${doctor.lastName} (ID: ${doctor.id})` : "";
+                }
                 return (
                   <tr key={appt.id} className="border-t">
-                    <td className="p-2">{appt.appointmentDateTime}</td>
                     <td className="p-2">
-                      {patient ? (
-                        <button
-                          className="text-blue-600 underline"
-                          onClick={() => {
-                            setSelectedPatient(patient);
-                            setSelectedAppointment(appt);
-                            setShowPatientModal(true);
-                          }}
-                        >
-                          {patient.firstName} {patient.lastName}
-                        </button>
-                      ) : ""}
+                      {(() => {
+                        const value = appt.appointmentDateTime;
+                        if (value && typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) {
+                          const d = new Date(value);
+                          return <>
+                            {d.toLocaleDateString()}<br />
+                            <span style={{ fontSize: '0.85em', color: '#666' }}>{d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          </>;
+                        }
+                        return value;
+                      })()}
                     </td>
-                    <td className="p-2">{doctor ? `${doctor.firstName} ${doctor.lastName}` : ""}</td>
+                    <td className="p-2">{patientName}</td>
+                    <td className="p-2">{doctorName}</td>
                     <td className="p-2">{appt.status}</td>
                     <td className="p-2">
                       <TruncatedCell text={appt.reason} maxLength={30} label="Reason" />
@@ -315,6 +376,25 @@ function AppointmentsPage({ user }) {
 
   return (
     <div className="p-6">
+      {/* Debug panel */}
+      {/*
+      <div className="bg-gray-100 p-4 rounded mb-4">
+        <h4 className="font-bold">Debug Info</h4>
+        <pre className="text-xs whitespace-pre-wrap">
+          {JSON.stringify({
+            user,
+            appointments,
+            patients,
+            doctors,
+            filteredAppointments,
+            todayAppointments,
+            tomorrowAppointments,
+            expiredAppointments,
+            futureAppointments,
+          }, null, 2)}
+        </pre>
+      </div>
+      */}
       <h2 className="text-2xl font-bold mb-4">Appointments</h2>
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <input
@@ -324,27 +404,16 @@ function AppointmentsPage({ user }) {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border p-2 rounded w-full md:w-1/3"
         />
-        {(userRole === "admin" || userRole === "receptionist") && (
+        {(userRole === "admin" || userRole === "receptionist" || userRole === "doctor") && (
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded"
             onClick={() => {
               setModalType("add");
-              setCurrentAppointment(initialAppointment);
-              setShowModal(true);
-            }}
-          >
-            Add Appointment
-          </button>
-        )}
-        {userRole === "doctor" && (
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => {
-              setModalType("add");
-              setCurrentAppointment({
-                ...initialAppointment,
-                doctorId: doctorId
-              });
+              if (userRole === "doctor" && doctorId) {
+                setCurrentAppointment({ ...initialAppointment, doctorId });
+              } else {
+                setCurrentAppointment(initialAppointment);
+              }
               setShowModal(true);
             }}
           >
@@ -359,11 +428,13 @@ function AppointmentsPage({ user }) {
       <h3 className="text-xl font-bold mt-6 mb-2 text-green-600">Tomorrow's Appointments</h3>
       {renderTable(tomorrowAppointments)}
 
-      {/* <h3 className="text-xl font-bold mt-6 mb-2 text-yellow-600">Ongoing Appointments</h3>
-      {renderTable(ongoingAppointments)} */}
+  {/**
+   * <h3 className="text-xl font-bold mt-6 mb-2 text-yellow-600">Ongoing Appointments</h3>
+   * {renderTable(ongoingAppointments)}
+   */}
 
-      <h3 className="text-xl font-bold mt-6 mb-2 text-gray-600">Other Appointments</h3>
-      {renderTable(otherAppointments)}
+  <h3 className="text-xl font-bold mt-6 mb-2 text-gray-600">Upcoming Appointments</h3>
+  {renderTable(futureAppointments)}
 
       <h3 className="text-xl font-bold mt-6 mb-2 text-red-600">Expired Appointments</h3>
       {renderTable(expiredAppointments)}
