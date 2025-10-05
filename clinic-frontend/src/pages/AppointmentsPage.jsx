@@ -265,25 +265,28 @@ function AppointmentsPage({ user }) {
     );
   });
 
-  // Categorize appointments
-  const todayAppointments = filteredAppointments.filter(
+  // Categorize and sort appointments (ascending by date)
+  function sortByDateAsc(list) {
+    return [...list].sort((a, b) => new Date(a.appointmentDateTime) - new Date(b.appointmentDateTime));
+  }
+  const todayAppointments = sortByDateAsc(filteredAppointments.filter(
     (appt) => isToday(appt.appointmentDateTime)
-  );
-  const tomorrowAppointments = filteredAppointments.filter(
+  ));
+  const tomorrowAppointments = sortByDateAsc(filteredAppointments.filter(
     (appt) => isTomorrow(appt.appointmentDateTime)
-  );
-  const expiredAppointments = filteredAppointments.filter(
+  ));
+  const expiredAppointments = sortByDateAsc(filteredAppointments.filter(
     (appt) => isExpired(appt.appointmentDateTime)
-  );
-  const ongoingAppointments = filteredAppointments.filter(
+  ));
+  const ongoingAppointments = sortByDateAsc(filteredAppointments.filter(
     (appt) => isOngoing(appt.appointmentDateTime, appt.status)
-  );
-  const futureAppointments = filteredAppointments.filter(
+  ));
+  const futureAppointments = sortByDateAsc(filteredAppointments.filter(
     (appt) =>
       !isToday(appt.appointmentDateTime) &&
       !isTomorrow(appt.appointmentDateTime) &&
       !isExpired(appt.appointmentDateTime)
-  );
+  ));
 
   // Table render helper
   function renderTable(appointments) {
