@@ -97,7 +97,7 @@ function App() {
         */}
         {/* Header */}
         {isAuthenticated() && (
-          <header className="bg-white shadow p-4 flex justify-between items-center">
+          <header className="bg-white shadow p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
             <h1 className="text-2xl font-bold text-blue-600">Women's Clinic</h1>
             <nav className="space-x-4">
               <Link to="/home" className="text-gray-600 hover:text-blue-600">
@@ -133,8 +133,8 @@ function App() {
           </header>
         )}
 
-        {/* Main content */}
-        <main className="p-4 flex-grow bg-gray-100">
+  {/* Main content */}
+  <main className="p-4 flex-grow bg-gray-100" style={{ paddingTop: isAuthenticated() ? 80 : 0 }}>
           <Routes>
             <Route
               path="/"
