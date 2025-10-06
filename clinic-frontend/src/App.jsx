@@ -43,6 +43,7 @@ function PrivateRoute({ children }) {
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -96,30 +97,39 @@ function App() {
         </div>
         */}
         {/* Header */}
+
         {isAuthenticated() && (
           <header className="bg-white shadow p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
-            <h1 className="text-2xl font-bold text-blue-600">Women's Clinic</h1>
+            <div className="flex items-center gap-6">
+              <h1 className="text-2xl font-bold text-blue-600">Women's Clinic</h1>
+              {/* User Role Display */}
+              {user?.role && (
+                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm font-semibold capitalize" title="Your role">
+                  {user.role}
+                </span>
+              )}
+            </div>
             <nav className="space-x-4">
-              <Link to="/home" className="text-gray-600 hover:text-blue-600">
+              <Link to="/home" className={`px-2 py-1 rounded ${location.pathname === "/home" ? "bg-blue-600 text-white" : "text-gray-600 hover:text-blue-600"}`}>
                 Home
               </Link>
               {user?.role?.toLowerCase() === "doctor" ? (
-                <Link to="/doctors" className="text-gray-600 hover:text-blue-600">
+                <Link to="/doctors" className={`px-2 py-1 rounded ${location.pathname === "/doctors" ? "bg-blue-600 text-white" : "text-gray-600 hover:text-blue-600"}`}>
                   Dashboard
                 </Link>
               ) : (
-                <Link to="/doctors" className="text-gray-600 hover:text-blue-600">
+                <Link to="/doctors" className={`px-2 py-1 rounded ${location.pathname === "/doctors" ? "bg-blue-600 text-white" : "text-gray-600 hover:text-blue-600"}`}>
                   Doctors
                 </Link>
               )}
-              <Link to="/appointments" className="text-gray-600 hover:text-blue-600">
+              <Link to="/appointments" className={`px-2 py-1 rounded ${location.pathname === "/appointments" ? "bg-blue-600 text-white" : "text-gray-600 hover:text-blue-600"}`}>
                 Appointments
               </Link>
-              <Link to="/patients" className="text-gray-600 hover:text-blue-600">
+              <Link to="/patients" className={`px-2 py-1 rounded ${location.pathname === "/patients" ? "bg-blue-600 text-white" : "text-gray-600 hover:text-blue-600"}`}>
                 Patients
               </Link>
               {user?.role?.toLowerCase() === 'admin' && (
-                <Link to="/users" className="text-gray-600 hover:text-blue-600">
+                <Link to="/users" className={`px-2 py-1 rounded ${location.pathname === "/users" ? "bg-blue-600 text-white" : "text-gray-600 hover:text-blue-600"}`}>
                   Users
                 </Link>
               )}
